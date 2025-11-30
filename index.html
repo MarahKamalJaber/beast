@@ -85,241 +85,234 @@ body::before{
 
 <body>
 
-<img src="https://beastburger2025.neocities.org/logo.png" class="logo">
+    <img src="https://beastburger2025.neocities.org/logo.png" class="logo">
 
-<div class="machine">
-  <div class="screen">
-    <div id="r1" class="reel">🍔</div>
-    <div id="r2" class="reel">🥗</div>
-    <div id="r3" class="reel">🍖</div>
-  </div>
+    <div class="machine">
+        <div class="screen">
+            <div id="r1" class="reel">🍔</div>
+            <div id="r2" class="reel">🥗</div>
+            <div id="r3" class="reel">🍖</div>
+        </div>
 
-  <div class="lever-box">
-    <div id="lever" class="lever">
-      <div class="lever-stick"></div>
-      <div class="lever-ball"></div>
+        <div class="lever-box">
+            <div id="lever" class="lever">
+                <div class="lever-stick"></div>
+                <div class="lever-ball"></div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<div class="instructions">
-  😈 ادخل رقمك وجرب حظّك مع الوحش  
-  🎯 ممكن تربح برجر، سلطة، أجنحة
-</div>
+    <div class="instructions">
+        😈 ادخل رقمك وجرب حظّك مع الوحش
+        🎯 ممكن تربح برجر، سلطة، أجنحة
+    </div>
 
-<!-- WIN POPUP -->
-<div id="popup">
-  <div class="popup-box">
-    <div class="win-emoji" id="popupEmoji">🔥🍔🔥</div>
-    <h2 id="popupTitle">مبروووك!</h2>
-    <p id="popupMsg"></p>
-    <a id="waLink" class="whatsapp-btn" target="_blank">تواصل معنا عبر واتساب</a>
-  </div>
-</div>
-
-<!-- PHONE SCREEN -->
-<div id="phonePopup">
-  <div class="phone-box">
-    <h2>أدخل رقم جوالك</h2>
-    <p>محاولة واحدة فقط</p>
-    <input id="phoneInput" type="tel" placeholder="059XXXXXXX"
-      style="width:95%;padding:12px;border-radius:10px;border:2px solid #ff5a00;font-size:18px;">
-    <button onclick="submitPhone()" 
-      style="margin-top:15px;width:100%;padding:12px;font-size:18px;background:#ff5a00;color:white;border:none;border-radius:10px;">
-      متابعة
-    </button>
-  </div>
-</div>
-
-<script>
-const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AKfycbzHNjeqru4gBXYW4DmJaQ2b3Pwu4eTjqDXbaFAwMA&lib=AKfycbzHNjeqru4gBXYW4DmJaQ2b3Pwu4eTjqDXbaFAwMA";
+    <!-- WIN POPUP -->
+    <div id="popup">
+        <div class="popup-box">
+            <div class="win-emoji" id="popupEmoji">🔥🍔🔥</div>
+            <h2 id="popupTitle">مبروووك!</h2>
+            <p id="popupMsg"></p>
+            <a id="waLink" class="whatsapp-btn" target="_blank">تواصل معنا عبر واتساب</a>
+        </div>
+    </div>
 
 
-let deviceId = null;
-let phone = "";
-let fingerprintLoaded = false;
-let allowed = false;
+    <!-- PHONE SCREEN -->
+    <div id="phonePopup">
+        <div class="phone-box">
+            <h2>أدخل رقم جوالك</h2>
+            <p>محاولة واحدة فقط</p>
+            <input id="phoneInput" type="tel" placeholder="059XXXXXXX"
+                   style="width:95%;padding:12px;border-radius:10px;border:2px solid #ff5a00;font-size:18px;">
+            <button onclick="submitPhone()"
+                    style="margin-top:15px;width:100%;padding:12px;font-size:18px;background:#ff5a00;color:white;border:none;border-radius:10px;">
+                متابعة
+            </button>
+        </div>
+    </div>
 
-const winChance = 0.10;
-const symbols = ["🍔","🥗","🍖","🍟"];
-const reelsIds = ["r1","r2","r3"];
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbyB58-gypOKNF9ENFunruEqB2FbnwKbOFptANh860N_oERW6lKus7CHdBFADLs4c4U/exec";
 
-/* === Fingerprint === */
-function initFP(){
-  if (!window.FingerprintJS){
-    deviceId = "fallback_" + Math.random().toString(36).slice(2);
-    fingerprintLoaded = true;
-    return;
-  }
+        let deviceId = null;
+        let phone = "";
+        let fingerprintLoaded = false;
+        let allowed = false;
 
-  FingerprintJS.load()
-    .then(fp=>fp.get())
-    .then(res=>{
-      deviceId = res.visitorId;
-      fingerprintLoaded = true;
-    })
-    .catch(()=>{
-      deviceId = "fallback_" + Math.random().toString(36).slice(2);
-      fingerprintLoaded = true;
-    });
+        const winChance = 0.10;
+        const symbols = ["🍔", "🥗", "🍖", "🍟"];
+        const reelsIds = ["r1", "r2", "r3"];
 
-  setTimeout(()=>{
-    if (!deviceId){
-      deviceId = "fallback_" + Math.random().toString(36).slice(2);
-    }
-    fingerprintLoaded = true;
-  },1500);
-}
-setTimeout(initFP,700);
+        /* === Fingerprint === */
+        function initFP() {
+            if (!window.FingerprintJS) {
+                deviceId = "fallback_" + Math.random().toString(36).slice(2);
+                fingerprintLoaded = true;
+                return;
+            }
+
+            FingerprintJS.load()
+                .then(fp => fp.get())
+                .then(res => {
+                    deviceId = res.visitorId;
+                    fingerprintLoaded = true;
+                })
+                .catch(() => {
+                    deviceId = "fallback_" + Math.random().toString(36).slice(2);
+                    fingerprintLoaded = true;
+                });
+        }
+        setTimeout(initFP, 600);
+
+        /* === Submit Phone === */
+        function submitPhone() {
+
+            if (!fingerprintLoaded) {
+                alert("جاري التحقق من جهازك...");
+                return;
+            }
+
+            phone = document.getElementById("phoneInput").value.trim();
+
+            if (phone.length < 7) {
+                alert("رقم غير صالح");
+                return;
+            }
+
+            fetch(`${API_URL}?action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
+                .then(r => r.json())
+                .then(res => {
+                    if (!res.allowed) {
+                        alert("هذا الرقم أو الجهاز شارك مسبقاً 😈");
+                        return;
+                    }
+
+                    fetch(API_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            action: "registerPhone",
+                            phone: phone,
+                            deviceId: deviceId
+                        })
+                    });
+
+                    document.getElementById("phonePopup").style.display = "none";
+                    allowed = true;
+                })
+                .catch(err => {
+                    console.log("ERROR:", err);
+                    alert("مشكلة اتصال بالخادم");
+                });
+        }
+
+        /* === Lever click === */
+        document.getElementById("lever").onclick = function () {
+
+            if (!allowed) {
+                alert("يجب إدخال رقم الجوال أولاً");
+                return;
+            }
+
+            this.classList.add("active");
+            setTimeout(() => this.classList.remove("active"), 300);
+
+            startSpin();
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "played",
+                    phone: phone,
+                    deviceId: deviceId
+                })
+            });
+        };
 
 
-/* === Submit Phone === */
-function submitPhone(){
+        /* === Spin === */
+        function startSpin() {
+            let result = [];
+            const isWin = Math.random() < winChance;
 
-  if (!fingerprintLoaded){
-    alert("جاري التحقق من جهازك... لحظة فقط");
-    return;
-  }
+            let forcedType = null;
+            if (isWin) {
+                let r = Math.random();
+                if (r < 0.10) forcedType = "burger";
+                else if (r < 0.55) forcedType = "salad";
+                else forcedType = "wings";
+            }
 
-  phone = document.getElementById("phoneInput").value.trim();
+            reelsIds.forEach((id, idx) => {
+                let reel = document.getElementById(id);
 
-  if (phone.length < 7){
-    alert("رقم غير صالح");
-    return;
-  }
+                let interval = setInterval(() => {
+                    reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                }, 80);
 
-  // checkPhone
-  fetch(`${API_URL}?action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
-    .then(r=>r.json())
-    .then(res=>{
+                setTimeout(() => {
+                    clearInterval(interval);
 
-      if (!res.allowed){
-        alert("هذا الرقم أو الجهاز شارك مسبقاً 😈");
-        return;
-      }
+                    let final;
+                    if (forcedType) {
+                        final = forcedType === "burger" ? "🍔" :
+                            forcedType === "salad" ? "🥗" :
+                                "🍖";
+                    } else {
+                        final = symbols[Math.floor(Math.random() * symbols.length)];
+                    }
 
-      // register phone
-      fetch(API_URL,{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({
-          action:"registerPhone",
-          phone:phone,
-          deviceId:deviceId
-        })
-      });
+                    reel.textContent = final;
+                    result[idx] = final;
 
-      document.getElementById("phonePopup").style.display="none";
-      allowed = true;
-    });
-}
+                    if (idx === 2) {
+                        setTimeout(() => checkResult(result, forcedType), 500);
+                    }
 
+                }, 4200 + idx * 400);
+            });
+        }
 
-/* === Lever (start game) === */
-document.getElementById("lever").onclick = function(){
+        /* === Result === */
+        function checkResult(arr, forced) {
+            if (forced) return showWin(forced);
 
-  if (!allowed){
-    alert("يجب إدخال رقم الجوال أولاً");
-    return;
-  }
+            if (arr[0] === arr[1] && arr[1] === arr[2]) {
+                if (arr[0] === "🍔") return showWin("burger");
+                if (arr[0] === "🥗") return showWin("salad");
+                if (arr[0] === "🍖") return showWin("wings");
+            }
 
-  this.classList.add("active");
-  setTimeout(()=> this.classList.remove("active"),300);
+            showLose();
+        }
 
-  startSpin();
+        function showWin(type) {
+            document.getElementById("popup").style.display = "flex";
 
-  fetch(API_URL,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      action:"played",
-      phone:phone,
-      deviceId:deviceId
-    })
-  });
-};
+            if (type === "burger") {
+                popupEmoji.textContent = "🍔";
+                popupMsg.textContent = "ربحت وجبة برغر مجانية!";
+            }
+            if (type === "salad") {
+                popupEmoji.textContent = "🥗";
+                popupMsg.textContent = "ربحت سلطة البيست!";
+            }
+            if (type === "wings") {
+                popupEmoji.textContent = "🍖";
+                popupMsg.textContent = "ربحت وجبة أجنحة!";
+            }
+        }
 
-function startSpin(){
+        function showLose() {
+            document.getElementById("popup").style.display = "flex";
+            popupEmoji.textContent = "😈";
+            popupMsg.textContent = "للأسف ما ربحت هالمرة!";
+            waLink.style.display = "none";
+        }
+    </script>
 
-  let result = [];
-  const isWin = Math.random() < winChance;
-
-  let forcedType = null;
-  if (isWin){
-    let r = Math.random();
-    if (r < 0.10) forcedType = "burger";
-    else if (r < 0.55) forcedType = "salad";
-    else forcedType = "wings";
-  }
-
-  reelsIds.forEach((id, idx)=>{
-    let reel = document.getElementById(id);
-
-    let interval = setInterval(()=>{
-      reel.textContent = symbols[Math.floor(Math.random()*symbols.length)];
-    },80);
-
-    setTimeout(()=>{
-      clearInterval(interval);
-
-      let final;
-      if (forcedType){
-        final = forcedType==="burger" ? "🍔" :
-                forcedType==="salad"  ? "🥗" :
-                                         "🍖";
-      } else {
-        final = symbols[Math.floor(Math.random()*symbols.length)];
-      }
-
-      reel.textContent = final;
-      result[idx] = final;
-
-      if (idx === 2){
-        setTimeout(()=> checkResult(result, forcedType), 500);
-      }
-
-    }, 4500 + idx*500);
-  });
-}
-
-/* === Result === */
-function checkResult(arr, forced){
-
-  if (forced) return showWin(forced);
-
-  if (arr[0]===arr[1] && arr[1]===arr[2]){
-    if (arr[0]==="🍔") return showWin("burger");
-    if (arr[0]==="🥗") return showWin("salad");
-    if (arr[0]==="🍖") return showWin("wings");
-  }
-
-  showLose();
-}
-
-function showWin(type){
-  document.getElementById("popup").style.display="flex";
-
-  if (type==="burger"){
-    popupEmoji.textContent="🍔";
-    popupMsg.textContent="ربحت وجبة برغر مجانية!";
-  }
-  if (type==="salad"){
-    popupEmoji.textContent="🥗";
-    popupMsg.textContent="ربحت سلطة البيست!";
-  }
-  if (type==="wings"){
-    popupEmoji.textContent="🍖";
-    popupMsg.textContent="ربحت وجبة أجنحة!";
-  }
-}
-
-function showLose(){
-  document.getElementById("popup").style.display="flex";
-  popupEmoji.textContent="😈";
-  popupMsg.textContent="للأسف ما ربحت هالمرة!";
-  waLink.style.display="none";
-}
-</script>
 
 </body>
 </html>
