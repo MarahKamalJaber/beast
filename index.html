@@ -1,86 +1,176 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Beast Burger Spin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Beast Burger Spin</title>
 
-<script async src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js"></script>
 
-<style>
-body{
-  margin:0; padding:0;
-  font-family:'Cairo',sans-serif;
-  background:#7a1824; color:#fff; text-align:center;
-  overflow-x:hidden;
-}
-body::before{
-  content:"BEAST BURGER BEAST BURGER BEAST BURGER BEAST BURGER ";
-  position:fixed; top:-15%; left:-25%;
-  width:180%; height:180%;
-  font-size:80px; font-weight:900;
-  color:rgba(0,0,0,0.12);
-  transform:rotate(-28deg); z-index:-1;
-}
-.logo{ width:135px; margin:25px auto 10px; display:block; }
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo',sans-serif;
+            background: #7a1824;
+            color: #fff;
+            text-align: center;
+            overflow-x: hidden;
+        }
 
-.machine{
-  width:92%; max-width:480px; margin:35px auto 0;
-  background:linear-gradient(180deg,#ff8a20,#ff5a00);
-  padding:28px 20px 40px;
-  border-radius:38px;
-  box-shadow:0 0 50px rgba(0,0,0,0.45);
-  position:relative;
-}
-.screen{
-  background:#0a0607; border-radius:28px;
-  padding:30px 20px;
-  display:flex; justify-content:space-between; align-items:center;
-}
-.reel{
-  width:90px; height:90px; background:#1a0f13;
-  border-radius:20px; font-size:52px;
-  display:flex; justify-content:center; align-items:center;
-}
-@media(max-width:600px){
-  .reel{ width:72px;height:72px;font-size:44px; }
-}
+            body::before {
+                content: "BEAST BURGER BEAST BURGER BEAST BURGER BEAST BURGER ";
+                position: fixed;
+                top: -15%;
+                left: -25%;
+                width: 180%;
+                height: 180%;
+                font-size: 80px;
+                font-weight: 900;
+                color: rgba(0,0,0,0.12);
+                transform: rotate(-28deg);
+                z-index: -1;
+            }
 
-.lever-box{ position:absolute; left:-5px; bottom:-40px; transform:rotate(12deg); }
-.lever{ cursor:pointer; width:90px; transition:.25s ease; }
-.lever.active{ transform:rotate(25deg) translateY(10px); }
-.lever-stick{ width:16px;height:90px;background:#000;border-radius:10px;margin:0 auto; }
-.lever-ball{ width:55px;height:55px;background:#ffb58d;border-radius:50%;box-shadow:0 6px 12px rgba(0,0,0,0.55);margin-top:-12px;}
+        .logo {
+            width: 135px;
+            margin: 25px auto 10px;
+            display: block;
+        }
 
-.instructions{ margin-top:50px;font-size:18px;line-height:1.7;padding:0 10px; }
+        .machine {
+            width: 92%;
+            max-width: 480px;
+            margin: 35px auto 0;
+            background: linear-gradient(180deg,#ff8a20,#ff5a00);
+            padding: 28px 20px 40px;
+            border-radius: 38px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.45);
+            position: relative;
+        }
 
-/* Popup */
-#popup{
-  position:fixed; top:0; left:0; width:100%; height:100%;
-  background:rgba(0,0,0,0.85);
-  display:none; justify-content:center; align-items:center;
-  z-index:999;
-}
-.popup-box{
-  background:#0f0a0a; border:3px solid #ff6a00;
-  padding:25px; border-radius:18px;
-  width:85%; max-width:350px; text-align:center;
-}
-.win-emoji{ font-size:60px; margin-bottom:10px; }
+        .screen {
+            background: #0a0607;
+            border-radius: 28px;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-/* Phone Popup */
-#phonePopup{
-  position:fixed; top:0; left:0; width:100%; height:100%;
-  background:rgba(0,0,0,0.85);
-  display:flex; justify-content:center; align-items:center;
-  z-index:9999;
-}
-.phone-box{
-  background:white; color:black; padding:25px;
-  border-radius:15px; width:85%; max-width:320px;
-  text-align:center;
-}
-</style>
+        .reel {
+            width: 90px;
+            height: 90px;
+            background: #1a0f13;
+            border-radius: 20px;
+            font-size: 52px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media(max-width:600px) {
+            .reel {
+                width: 72px;
+                height: 72px;
+                font-size: 44px;
+            }
+        }
+
+        .lever-box {
+            position: absolute;
+            left: -5px;
+            bottom: -40px;
+            transform: rotate(12deg);
+        }
+
+        .lever {
+            cursor: pointer;
+            width: 90px;
+            transition: .25s ease;
+        }
+
+            .lever.active {
+                transform: rotate(25deg) translateY(10px);
+            }
+
+        .lever-stick {
+            width: 16px;
+            height: 90px;
+            background: #000;
+            border-radius: 10px;
+            margin: 0 auto;
+        }
+
+        .lever-ball {
+            width: 55px;
+            height: 55px;
+            background: #ffb58d;
+            border-radius: 50%;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.55);
+            margin-top: -12px;
+        }
+
+        .instructions {
+            margin-top: 50px;
+            font-size: 18px;
+            line-height: 1.7;
+            padding: 0 10px;
+        }
+
+        /* Popup */
+        #popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .popup-box {
+            background: #0f0a0a;
+            border: 3px solid #ff6a00;
+            padding: 25px;
+            border-radius: 18px;
+            width: 85%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .win-emoji {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        /* Phone Popup */
+        #phonePopup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .phone-box {
+            background: white;
+            color: black;
+            padding: 25px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 320px;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
@@ -103,7 +193,7 @@ body::before{
     </div>
 
     <div class="instructions">
-        😈 ادخل رقمك وجرب حظّك مع الوحش
+        😈 ادخل رقمك وجرب حظّك مع الوحش<br>
         🎯 ممكن تربح برجر، سلطة، أجنحة
     </div>
 
@@ -116,7 +206,6 @@ body::before{
             <a id="waLink" class="whatsapp-btn" target="_blank">تواصل معنا عبر واتساب</a>
         </div>
     </div>
-
 
     <!-- PHONE SCREEN -->
     <div id="phonePopup">
@@ -133,7 +222,7 @@ body::before{
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyB58-gypOKNF9ENFunruEqB2FbnwKbOFptANh860N_oERW6lKus7CHdBFADLs4c4U/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwuEiXPxkGr0oN9nElGFjYMMt4F_pewV7BaIWd_nJhmEIy8YDViOH0gU_rHYom9yrY/exec"; // ضع رابطك هنا
 
         let deviceId = null;
         let phone = "";
@@ -146,21 +235,21 @@ body::before{
 
         /* === Fingerprint === */
         function initFP() {
-            if (!window.FingerprintJS) {
-                deviceId = "fallback_" + Math.random().toString(36).slice(2);
-                fingerprintLoaded = true;
-                return;
-            }
-
             FingerprintJS.load()
                 .then(fp => fp.get())
                 .then(res => {
                     deviceId = res.visitorId;
                     fingerprintLoaded = true;
-                })
-                .catch(() => {
-                    deviceId = "fallback_" + Math.random().toString(36).slice(2);
-                    fingerprintLoaded = true;
+
+                    // === check device immediately ===
+                    fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
+                        .then(r => r.json())
+                        .then(res => {
+                            if (!res.allowed) {
+                                document.body.innerHTML =
+                                    "<h2 style='margin-top:50px;color:white;'>لا يمكن اللعب أكثر من مرة 😈</h2>";
+                            }
+                        });
                 });
         }
         setTimeout(initFP, 600);
@@ -184,7 +273,7 @@ body::before{
                 .then(r => r.json())
                 .then(res => {
                     if (!res.allowed) {
-                        alert("هذا الرقم أو الجهاز شارك مسبقاً 😈");
+                        alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
                         return;
                     }
 
@@ -200,10 +289,6 @@ body::before{
 
                     document.getElementById("phonePopup").style.display = "none";
                     allowed = true;
-                })
-                .catch(err => {
-                    console.log("ERROR:", err);
-                    alert("مشكلة اتصال بالخادم");
                 });
         }
 
@@ -230,7 +315,6 @@ body::before{
                 })
             });
         };
-
 
         /* === Spin === */
         function startSpin() {
@@ -308,11 +392,10 @@ body::before{
         function showLose() {
             document.getElementById("popup").style.display = "flex";
             popupEmoji.textContent = "😈";
-            popupMsg.textContent = "للأسف ما ربحت هالمرة!";
+            popupMsg.textContent = "حظاً أوفر!";
             waLink.style.display = "none";
         }
     </script>
-
 
 </body>
 </html>
