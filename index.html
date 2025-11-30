@@ -118,7 +118,6 @@
             padding: 0 10px;
         }
 
-        /* Popup */
         #popup {
             position: fixed;
             top: 0;
@@ -142,12 +141,6 @@
             text-align: center;
         }
 
-        .win-emoji {
-            font-size: 60px;
-            margin-bottom: 10px;
-        }
-
-        /* Phone Popup */
         #phonePopup {
             position: fixed;
             top: 0;
@@ -183,7 +176,6 @@
             <div id="r2" class="reel">🥗</div>
             <div id="r3" class="reel">🍖</div>
         </div>
-
         <div class="lever-box">
             <div id="lever" class="lever">
                 <div class="lever-stick"></div>
@@ -197,13 +189,13 @@
         🎯 ممكن تربح برجر، سلطة، أجنحة
     </div>
 
+
     <!-- WIN POPUP -->
     <div id="popup">
         <div class="popup-box">
             <div class="win-emoji" id="popupEmoji">🔥🍔🔥</div>
             <h2 id="popupTitle">مبروووك!</h2>
             <p id="popupMsg"></p>
-            <a id="waLink" class="whatsapp-btn" target="_blank">تواصل معنا عبر واتساب</a>
         </div>
     </div>
 
@@ -222,16 +214,14 @@
     </div>
 
     <script>
-        const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLg4mDN-VzMcqNj4v5beUM0xj9BZ1P70Rp-KVIhX6_z2OlePxGMldnUabA0CnqM-0RdNIN23lH8Ej7FuZuHuJQnhJ2puQisYI9n8XBmvZUvavkDLuJTzyxqosdout5O8ODH3rojwF9C7a9x5zZ5OhAkiNXvmfAcxsrRIoU4JuLqvkCRSemycp3quOk6ueU5o6Grg8DiVlNEc6-St4zkUb6yAaR3PTrtkDsrVIgFXwwCdcmo8tknhMD5b2nnz7_nBPKMPxedtXPPZoJ_-XhP4LgcXANpJOQ&lib=MfQsuvrqNMQFiCiBPP_CiVAfY0QbVsGWL"; // ضع رابطك هنا
+
+        const API_URL =
+            "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLjdA8E9FT_bFaP_DSNq4-bz2BhY0Z8ajdbejw-c20WLzk2YyWPw50ls3EFWBnULMzOdInHOLRhyx2ZQmMCEHkpA7BKoiF8gtOhuoh8Zp9t7yS0ATVNuq9yUWfXDOUsjLJIZI878ayyZkYXCheg7HfQHkunPs0jYq8KLcahctDZz0q7Upu4iXNSlMy2CgVxlHuBk-d4jC84KhNFSExvVtjbnhDbmeZgPZ_5gAqmp3Ebj-IShAeJsh5pnh0zU7wuQnJIQiLXPaHDk2rSoSWUzv0UTDnuErg&lib=MfQsuvrqNMQFiCiBPP_CiVAfY0QbVsGWL";
 
         let deviceId = null;
         let phone = "";
         let fingerprintLoaded = false;
         let allowed = false;
-
-        const winChance = 0.10;
-        const symbols = ["🍔", "🥗", "🍖", "🍟"];
-        const reelsIds = ["r1", "r2", "r3"];
 
         /* === Fingerprint === */
         function initFP() {
@@ -241,8 +231,7 @@
                     deviceId = res.visitorId;
                     fingerprintLoaded = true;
 
-                    // === check device immediately ===
-                    fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
+                    fetch(`${API_URL}&action=checkDeviceOnly&deviceId=${deviceId}`)
                         .then(r => r.json())
                         .then(res => {
                             if (!res.allowed) {
@@ -252,7 +241,8 @@
                         });
                 });
         }
-        setTimeout(initFP, 600);
+        setTimeout(initFP, 400);
+
 
         /* === Submit Phone === */
         function submitPhone() {
@@ -269,9 +259,10 @@
                 return;
             }
 
-            fetch(`${API_URL}?action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
+            fetch(`${API_URL}&action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
                 .then(r => r.json())
                 .then(res => {
+
                     if (!res.allowed) {
                         alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
                         return;
@@ -291,6 +282,7 @@
                     allowed = true;
                 });
         }
+
 
         /* === Lever click === */
         document.getElementById("lever").onclick = function () {
@@ -316,10 +308,12 @@
             });
         };
 
-        /* === Spin === */
+
+        /* === SPIN === */
         function startSpin() {
             let result = [];
-            const isWin = Math.random() < winChance;
+            const symbols = ["🍔", "🥗", "🍖", "🍟"];
+            const isWin = Math.random() < 0.10;
 
             let forcedType = null;
             if (isWin) {
@@ -329,7 +323,7 @@
                 else forcedType = "wings";
             }
 
-            reelsIds.forEach((id, idx) => {
+            ["r1", "r2", "r3"].forEach((id, idx) => {
                 let reel = document.getElementById(id);
 
                 let interval = setInterval(() => {
@@ -340,28 +334,25 @@
                     clearInterval(interval);
 
                     let final;
-                    if (forcedType) {
-                        final = forcedType === "burger" ? "🍔" :
-                            forcedType === "salad" ? "🥗" :
-                                "🍖";
-                    } else {
-                        final = symbols[Math.floor(Math.random() * symbols.length)];
-                    }
+                    if (forcedType) final =
+                        forcedType === "burger" ? "🍔" :
+                            forcedType === "salad" ? "🥗" : "🍖";
+                    else final = symbols[Math.floor(Math.random() * symbols.length)];
 
                     reel.textContent = final;
                     result[idx] = final;
 
-                    if (idx === 2) {
-                        setTimeout(() => checkResult(result, forcedType), 500);
-                    }
+                    if (idx === 2) setTimeout(() => checkResult(result, forcedType), 500);
 
                 }, 4200 + idx * 400);
             });
         }
 
-        /* === Result === */
+        /* === RESULT === */
         function checkResult(arr, forced) {
-            if (forced) return showWin(forced);
+
+            if (forced)
+                return showWin(forced);
 
             if (arr[0] === arr[1] && arr[1] === arr[2]) {
                 if (arr[0] === "🍔") return showWin("burger");
@@ -375,26 +366,17 @@
         function showWin(type) {
             document.getElementById("popup").style.display = "flex";
 
-            if (type === "burger") {
-                popupEmoji.textContent = "🍔";
-                popupMsg.textContent = "ربحت وجبة برغر مجانية!";
-            }
-            if (type === "salad") {
-                popupEmoji.textContent = "🥗";
-                popupMsg.textContent = "ربحت سلطة البيست!";
-            }
-            if (type === "wings") {
-                popupEmoji.textContent = "🍖";
-                popupMsg.textContent = "ربحت وجبة أجنحة!";
-            }
+            if (type === "burger") popupEmoji.textContent = "🍔", popupMsg.textContent = "ربحت وجبة برغر!";
+            if (type === "salad") popupEmoji.textContent = "🥗", popupMsg.textContent = "ربحت سلطة!";
+            if (type === "wings") popupEmoji.textContent = "🍖", popupMsg.textContent = "ربحت أجنحة!";
         }
 
         function showLose() {
             document.getElementById("popup").style.display = "flex";
             popupEmoji.textContent = "😈";
             popupMsg.textContent = "حظاً أوفر!";
-            waLink.style.display = "none";
         }
+
     </script>
 
 </body>
