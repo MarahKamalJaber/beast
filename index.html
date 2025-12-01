@@ -155,11 +155,19 @@ function submitPhone() {
 
     fetch(`${API_URL}?action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
         .then(r => r.json())
-        .then(res => {
-            if (!res.allowed) {
-                alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
-                return;
-            }
+       .then(res => {
+
+    if (!res.allowed) {
+
+        if (res.reason === "phone_exists") {
+            alert("هذا الرقم لعب مسبقاً ولا يمكنه اللعب مرة أخرى نهائياً 😈");
+            return;
+        }
+
+        alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
+        return;
+    }
+
 
             fetch(API_URL, {
                 method: "POST",
@@ -273,5 +281,6 @@ function showLose() {
 
 </body>
 </html>
+
 
 
