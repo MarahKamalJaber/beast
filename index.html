@@ -156,26 +156,27 @@ fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
 function submitPhone() {
     phone = document.getElementById("phoneInput").value.trim();
 
-    if (phone.length < 7) { alert("رقم غير صالح"); return; }
+    if (phone.length < 7) {
+        alert("رقم غير صالح");
+        return;
+    }
 
     fetch(`${API_URL}?action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
         .then(r => r.json())
-     .then(res => {
+        .then(res => {
 
-    if (!res.allowed) {
+            if (!res.allowed) {
 
-        if (res.reason === "phone_exists") {
-            alert("هذا الرقم لعب مسبقاً ولا يمكنه اللعب مرة أخرى نهائياً 😈");
-            return;
-        }
+                if (res.reason === "phone_exists") {
+                    alert("هذا الرقم لعب مسبقاً ولا يمكنه اللعب مرة أخرى نهائياً 😈");
+                    return;
+                }
 
-        alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
-        return;
-    }
-})
+                alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
+                return;
+            }
 
-
-
+            // تسجيل الرقم إذا كان مسموح
             fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -188,7 +189,9 @@ function submitPhone() {
 
             document.getElementById("phonePopup").style.display = "none";
             allowed = true;
-        });
+
+        }) // <-- إغلاق الـ then
+        .catch(err => console.error("ERROR:", err));
 }
 
 // عند سحب المقبض
@@ -291,6 +294,7 @@ function showLose() {
 
 </body>
 </html>
+
 
 
 
