@@ -1,12 +1,11 @@
 export default async function handler(req, res) {
-  const API_URL =
-    "https://script.google.com/macros/s/AKfycbwqpBfNy9yQRNen2tLVw6PIwqIv9aIup9F_9IFh1BrcwMiBOB_sZsBYRCZ0A1-muys/exec";
+  res.setHeader("Cache-Control", "no-store");
+  
+  const API_URL = "https://script.google.com/macros/s/AKfycbxeqpPZiXMMeB_ecK-DXmYn-5zdiLYNkcQYDCllsBe_WMXIYp7qsfx7HlI1YB1zMDU/exec";
 
   try {
-    let url = API_URL;
-
     if (req.method === "GET") {
-      url += "?" + new URLSearchParams(req.query).toString();
+      const url = API_URL + "?" + new URLSearchParams(req.query).toString();
       const response = await fetch(url);
       const data = await response.json();
       return res.status(200).json(data);
