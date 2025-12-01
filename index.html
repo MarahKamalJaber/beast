@@ -135,17 +135,21 @@ const API_URL = "/api/proxy";
 
 let deviceId = null;
 let phone = "";
-let fingerprintLoaded = false;
 let allowed = false;
-let spinning = false;     // موجود مرة واحدة فقط
-let finished = false;     // تعريف جديد
+let spinning = false;
+let finished = false;
 
-// بصمة الجهاز
+
+/* ===========================
+   1) بصمة الجهاز
+=========================== */
 let client = new ClientJS();
 deviceId = client.getFingerprint();
-fingerprintLoaded = true;
 
-// فحص الجهاز
+
+/* ===========================
+   2) فحص الجهاز عند فتح الصفحة
+=========================== */
 fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
     .then(r => r.json())
     .then(res => {
@@ -156,8 +160,11 @@ fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
     });
 
 
-// إدخال رقم الجوال
+/* ===========================
+   3) إدخال رقم الهاتف
+=========================== */
 function submitPhone() {
+
     phone = document.getElementById("phoneInput").value.trim();
 
     if (phone.length < 7) {
@@ -176,7 +183,7 @@ function submitPhone() {
                     return;
                 }
 
-                alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
+                alert("هذا الجهاز استخدم اللعبة مسبقاً 😈");
                 return;
             }
 
@@ -186,21 +193,21 @@ function submitPhone() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     action: "registerPhone",
-                    phone: phone,
-                    deviceId: deviceId
+                    phone,
+                    deviceId
                 })
             });
 
-            document.getElementById("phonePopup").style.display = "none";
             allowed = true;
-
-        })
-        .catch(err => console.error("ERROR:", err));
+            document.getElementById("phonePopup").style.display = "none";
+        });
 }
 
 
 
-// عند سحب المقبض
+/* ===========================
+   4) سحب الذراع
+=========================== */
 document.getElementById("lever").onclick = function () {
 
     if (!allowed) {
@@ -224,15 +231,17 @@ document.getElementById("lever").onclick = function () {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             action: "played",
-            phone: phone,
-            deviceId: deviceId
+            phone,
+            deviceId
         })
     });
 };
 
 
 
-// تشغيل السبين
+/* ===========================
+   5) عملية السبين
+=========================== */
 function startSpin() {
 
     let result = [];
@@ -259,21 +268,24 @@ function startSpin() {
         setTimeout(() => {
             clearInterval(interval);
 
-            let final = forcedType ?
-                (forcedType === "burger" ? "🍔" : forcedType === "salad" ? "🥗" : "🍖") :
-                symbols[Math.floor(Math.random() * symbols.length)];
+            let final = forcedType
+                ? (forcedType === "burger" ? "🍔" : forcedType === "salad" ? "🥗" : "🍖")
+                : symbols[Math.floor(Math.random() * symbols.length)];
 
             reel.textContent = final;
             result[idx] = final;
 
             if (idx === 2) setTimeout(() => checkResult(result, forcedType), 500);
 
-        }, 4200 + idx * 400);
+        }, 4000 + idx * 400);
     });
 }
 
 
 
+/* ===========================
+   6) تحديد نتيجة اللعبة
+=========================== */
 function checkResult(arr, forced) {
 
     if (forced) {
@@ -291,6 +303,7 @@ function checkResult(arr, forced) {
         if (arr[0] === "🍖") return showWin("wings");
     }
 
+    // خسارة
     spinning = false;
     finished = true;
     showLose();
@@ -298,7 +311,9 @@ function checkResult(arr, forced) {
 
 
 
-// الربح
+/* ===========================
+   7) الربح
+=========================== */
 function showWin(type) {
 
     document.getElementById("popup").style.display = "flex";
@@ -308,19 +323,19 @@ function showWin(type) {
     if (type === "burger") {
         popupEmoji.textContent = "🍔";
         popupMsg.textContent = "ربحت وجبة برغر!";
-        msg = "مرحبا، ربحت وجبة برغر من لعبة Beast Burger 🎉🍔";
+        msg = "ربحت وجبة برغر من لعبة Beast Burger 🎉🍔";
     }
 
     if (type === "salad") {
         popupEmoji.textContent = "🥗";
         popupMsg.textContent = "ربحت سلطة!";
-        msg = "مرحبا، ربحت سلطة من لعبة Beast Burger 🥗🔥";
+        msg = "ربحت سلطة من لعبة Beast Burger 🥗🔥";
     }
 
     if (type === "wings") {
         popupEmoji.textContent = "🍖";
         popupMsg.textContent = "ربحت أجنحة!";
-        msg = "مرحبا، ربحت وجبة أجنحة من لعبة Beast Burger 🍖🔥";
+        msg = "ربحت أجنحة من لعبة Beast Burger 🍖🔥";
     }
 
     document.getElementById("waLink").href =
@@ -331,12 +346,14 @@ function showWin(type) {
 
 
 
-// الخسارة
+/* ===========================
+   8) الخسارة
+=========================== */
 function showLose() {
 
     document.getElementById("popup").style.display = "flex";
 
-    popupTitle.textContent = "حظ أوفر!";
+   // popupTitle.textContent = "حظ أوفر!";
     popupEmoji.textContent = "😈";
     popupMsg.textContent = "حظاً أوفر!";
     document.getElementById("waLink").style.display = "none";
@@ -345,8 +362,10 @@ function showLose() {
 </script>
 
 
+
 </body>
 </html>
+
 
 
 
