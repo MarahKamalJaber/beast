@@ -7,6 +7,8 @@
 
     <script async src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js"></script>
 
+
+
     <style>
         body {
             margin: 0;
@@ -214,40 +216,46 @@
     </div>
 
     <script>
-
-        const API_URL =
-            "https://script.google.com/macros/s/AKfycbySmn3c8tBwHNnL7xBQCV-s_Qk5LCV4Rrjp8m881Og99hclDsGRgZ_3hdPAoPIx-oU/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbySmn3c8tBwHNnL7xBQCV-s_Qk5LCV4Rrjp8m881Og99hclDsGRgZ_3hdPAoPIx-oU/exec";
 
         let deviceId = null;
         let phone = "";
         let fingerprintLoaded = false;
         let allowed = false;
 
-        /* === Fingerprint === */
-        /* === Fingerprint === */
-        function initFP() {
-            FingerprintJS.load()
-                .then(fp => fp.get())
-                .then(res => {
-                    deviceId = res.visitorId;
-                    fingerprintLoaded = true;
+        /* =====================
+           تحميل البصمة صح 100%
+           ===================== */
+        FingerprintJS.load()
+            .then(fp => fp.get())
+            .then(result => {
+                deviceId = result.visitorId;
+                fingerprintLoaded = true;
 
-                    fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
-                        .then(r => r.json())
-                        .then(res => {
-                            if (!res.allowed) {
-                                document.body.innerHTML =
-                                    "<h2 style='margin-top:50px;color:white;'>لا يمكن اللعب أكثر من مرة 😈</h2>";
-                            }
-                        });
-                });
-        }
-        setTimeout(initFP, 400);
+                console.log("Fingerprint Loaded:", deviceId);
 
+                // **افحص الجهاز فقط**
+                fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
+                    .then(r => r.json())
+                    .then(res => {
+                        console.log("CheckDevice Response:", res);
 
-        /* === Submit Phone === */
+                        if (!res.allowed) {
+                            document.body.innerHTML =
+                                "<h2 style='margin-top:50px;color:white;text-align:center'>لا يمكن اللعب أكثر من مرة 😈</h2>";
+                        }
+                    })
+                    .catch(err => console.log("ERR checkDeviceOnly:", err));
+            })
+            .catch(err => {
+                alert("خطأ في قراءة بصمة الجهاز");
+                console.log("Fingerprint error:", err);
+            });
+
+        /* =====================
+             إدخال رقم الهاتف
+           ===================== */
         function submitPhone() {
-
             if (!fingerprintLoaded) {
                 alert("جاري التحقق من جهازك...");
                 return;
@@ -263,16 +271,17 @@
             fetch(`${API_URL}?action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
                 .then(r => r.json())
                 .then(res => {
-
                     if (!res.allowed) {
                         alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
                         return;
                     }
 
-                    fetch(`${API_URL}?action=registerPhone`, {
+                    // **تسجيل الرقم**
+                    fetch(API_URL, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
+                            action: "registerPhone",
                             phone: phone,
                             deviceId: deviceId
                         })
@@ -283,30 +292,26 @@
                 });
         }
 
-
-        /* === Lever click === */
+        /* =====================
+              تشغيل اللعبة
+           ===================== */
         document.getElementById("lever").onclick = function () {
-
             if (!allowed) {
                 alert("يجب إدخال رقم الجوال أولاً");
                 return;
             }
-
-            this.classList.add("active");
-            setTimeout(() => this.classList.remove("active"), 300);
-
             startSpin();
 
-            fetch(`${API_URL}?action=played`, {
+            fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                    action: "played",
                     phone: phone,
                     deviceId: deviceId
                 })
             });
         };
-
 
 
         /* === SPIN === */
