@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Beast Burger Spin</title>
 
-    <script async src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js"></script>
+   
+    <script src="https://openfpcdn.io/fingerprintjs/v3"></script>
+
 
 
 
@@ -226,32 +228,29 @@
         /* =====================
            تحميل البصمة صح 100%
            ===================== */
-        FingerprintJS.load()
+        const fpPromise = FingerprintJS.load();
+
+        fpPromise
             .then(fp => fp.get())
             .then(result => {
                 deviceId = result.visitorId;
                 fingerprintLoaded = true;
 
-                console.log("Fingerprint Loaded:", deviceId);
+                console.log("FP LOADED:", deviceId);
 
-                // **افحص الجهاز فقط**
+                // check device
                 fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
                     .then(r => r.json())
                     .then(res => {
-                        console.log("CheckDevice Response:", res);
-
+                        console.log("CHECK:", res);
                         if (!res.allowed) {
                             document.body.innerHTML =
                                 "<h2 style='margin-top:50px;color:white;text-align:center'>لا يمكن اللعب أكثر من مرة 😈</h2>";
                         }
                     })
-                    .catch(err => console.log("ERR checkDeviceOnly:", err));
+                    .catch(e => console.log("ERR:", e));
             })
-            .catch(err => {
-                alert("خطأ في قراءة بصمة الجهاز");
-                console.log("Fingerprint error:", err);
-            });
-
+            .catch(err => console.log("FP ERROR:", err));
         /* =====================
              إدخال رقم الهاتف
            ===================== */
