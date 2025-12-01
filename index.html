@@ -102,10 +102,15 @@
         <h2 id="popupTitle">مبروووك!</h2>
         <div class="win-emoji" id="popupEmoji">🔥🍔🔥</div>
         <p id="popupMsg"></p>
-        <a id="waLink" 
-   href="#" 
-   target="_blank" 
-   class="wa-btn">تواصل عبر واتساب</a>
+               <a id="waLink"
+           href="#"
+           target="_blank"
+           style="display:none;margin-top:15px; padding:12px; background:#25D366;
+                  color:white; border-radius:10px; font-size:18px; text-decoration:none; 
+                  font-weight:bold; display:block;">
+            تواصل عبر واتساب 📩
+        </a>
+
     </div>
 </div>
 
@@ -155,7 +160,7 @@ function submitPhone() {
 
     fetch(`${API_URL}?action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
         .then(r => r.json())
-       .then(res => {
+     .then(res => {
 
     if (!res.allowed) {
 
@@ -167,6 +172,8 @@ function submitPhone() {
         alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
         return;
     }
+})
+
 
 
             fetch(API_URL, {
@@ -271,16 +278,20 @@ function showWin(type) {
 }
 
 
+
 // رسالة الخسارة
 function showLose() {
     document.getElementById("popup").style.display = "flex";
     popupEmoji.textContent = "😈";
     popupMsg.textContent = "حظاً أوفر!";
     document.getElementById("waLink").style.display = "none";
-}</script>
+}
+
+    </script>
 
 </body>
 </html>
+
 
 
 
