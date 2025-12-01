@@ -16,16 +16,15 @@ export default async function handler(req, res) {
       const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(req.body)
+        body: JSON.stringify(req.body),
       });
       const data = await response.json();
       return res.status(200).json(data);
     }
 
     return res.status(400).json({ error: "Invalid method" });
+
   } catch (err) {
-    return res
-      .status(500)
-      .json({ error: "Proxy Error", message: err.toString() });
+    return res.status(500).json({ error: "Proxy error", details: err.toString() });
   }
 }
