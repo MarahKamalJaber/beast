@@ -216,13 +216,14 @@
     <script>
 
         const API_URL =
-            "https://script.google.com/macros/s/AKfycbyoaT5JWqw456wYqGM_iTm8oU9KOunR5n55hnxjpLNKlTQ8yXqDo0KRUoguZx2G9rc/exec";
+            "https://script.google.com/macros/s/AKfycbySmn3c8tBwHNnL7xBQCV-s_Qk5LCV4Rrjp8m881Og99hclDsGRgZ_3hdPAoPIx-oU/exec";
 
         let deviceId = null;
         let phone = "";
         let fingerprintLoaded = false;
         let allowed = false;
 
+        /* === Fingerprint === */
         /* === Fingerprint === */
         function initFP() {
             FingerprintJS.load()
@@ -231,7 +232,7 @@
                     deviceId = res.visitorId;
                     fingerprintLoaded = true;
 
-                    fetch(`${API_URL}&action=checkDeviceOnly&deviceId=${deviceId}`)
+                    fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
                         .then(r => r.json())
                         .then(res => {
                             if (!res.allowed) {
@@ -259,7 +260,7 @@
                 return;
             }
 
-            fetch(`${API_URL}&action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
+            fetch(`${API_URL}?action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
                 .then(r => r.json())
                 .then(res => {
 
@@ -268,11 +269,10 @@
                         return;
                     }
 
-                    fetch(API_URL, {
+                    fetch(`${API_URL}?action=registerPhone`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            action: "registerPhone",
                             phone: phone,
                             deviceId: deviceId
                         })
@@ -297,16 +297,16 @@
 
             startSpin();
 
-            fetch(API_URL, {
+            fetch(`${API_URL}?action=played`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    action: "played",
                     phone: phone,
                     deviceId: deviceId
                 })
             });
         };
+
 
 
         /* === SPIN === */
