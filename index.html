@@ -220,177 +220,163 @@
 
 
     
+<script src="client.min.js"></script>
+<script>
+    const API_URL = "/api/proxy";
 
-    <script src="client.min.js"></script>
+    let deviceId = null;
+    let phone     = "";
+    let allowed   = false;
 
-    <script>
-       
-        const API_URL = "https://github.com/MarahKamalJaber/beast/blob/main/api/proxy.js";
+    /* =============== بصمة الجهاز =============== */
+    const client = new ClientJS();
+    deviceId = client.getFingerprint();
 
+    console.log("DEVICE:", deviceId);
 
+    // check device only
+    fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
+        .then(r => r.json())
+        .then(res => {
+            console.log("DEVICE CHECK:", res);
+            if (!res.allowed) {
+                document.body.innerHTML =
+                    "<h2 style='margin-top:60px;color:white;text-align:center'>لا يمكن اللعب أكثر من مرة 😈</h2>";
+            }
+        })
+        .catch(err => console.log("ERR:", err));
 
-        let deviceId = null;
-        let phone = "";
-        let fingerprintLoaded = false;
-        let allowed = false;
+    /* ===================== إدخال رقم الهاتف ===================== */
+    function submitPhone() {
 
-        /* =====================
-           البصمة الجديدة (ClientJS)
-           ===================== */
-        let client = new ClientJS();
-        deviceId = client.getFingerprint();
-        fingerprintLoaded = true;
+        phone = document.getElementById("phoneInput").value.trim();
 
-        console.log("DEVICE ID:", deviceId);
+        if (phone.length < 7) {
+            alert("رقم غير صالح.");
+            return;
+        }
 
-        // check device
-        fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
+        fetch(`${API_URL}?action=checkPhone&deviceId=${deviceId}&phone=${phone}`)
             .then(r => r.json())
             .then(res => {
-                console.log("CHECK:", res);
                 if (!res.allowed) {
-                    document.body.innerHTML =
-                        "<h2 style='margin-top:50px;color:white;text-align:center'>لا يمكن اللعب أكثر من مرة 😈</h2>";
+                    alert("هذا الرقم أو الجهاز لعب مسبقًا 😈");
+                    return;
                 }
-            })
-            .catch(e => console.log("ERR:", e));
 
-
-        /* =====================
-             إدخال رقم الهاتف
-           ===================== */
-        function submitPhone() {
-            if (!fingerprintLoaded) {
-                alert("جاري التحقق من جهازك...");
-                return;
-            }
-
-            phone = document.getElementById("phoneInput").value.trim();
-
-            if (phone.length < 7) {
-                alert("رقم غير صالح");
-                return;
-            }
-
-            fetch(`${API_URL}?action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
-                .then(r => r.json())
-                .then(res => {
-                    if (!res.allowed) {
-                        alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
-                        return;
-                    }
-
-                    // **تسجيل الرقم**
-                    fetch(API_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" },
-                        body: JSON.stringify({
-                            action: "registerPhone",
-                            phone: phone,
-                            deviceId: deviceId
-                        })
-                    });
-
-
-                    document.getElementById("phonePopup").style.display = "none";
-                    allowed = true;
+                // تسجيل الرقم
+                fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        action: "registerPhone",
+                        deviceId: deviceId,
+                        phone: phone
+                    })
                 });
-        }
 
-        /* =====================
-              تشغيل اللعبة
-           ===================== */
-        document.getElementById("lever").onclick = function () {
-            if (!allowed) {
-                alert("يجب إدخال رقم الجوال أولاً");
-                return;
-            }
-            startSpin();
-
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({
-                    action: "played",
-                    phone: phone,
-                    deviceId: deviceId
-                })
+                document.getElementById("phonePopup").style.display = "none";
+                allowed = true;
             });
+    }
 
-        };
-
-
-        /* === SPIN === */
-        function startSpin() {
-            let result = [];
-            const symbols = ["🍔", "🥗", "🍖", "🍟"];
-            const isWin = Math.random() < 0.10;
-
-            let forcedType = null;
-            if (isWin) {
-                let r = Math.random();
-                if (r < 0.10) forcedType = "burger";
-                else if (r < 0.55) forcedType = "salad";
-                else forcedType = "wings";
-            }
-
-            ["r1", "r2", "r3"].forEach((id, idx) => {
-                let reel = document.getElementById(id);
-
-                let interval = setInterval(() => {
-                    reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-                }, 80);
-
-                setTimeout(() => {
-                    clearInterval(interval);
-
-                    let final;
-                    if (forcedType) final =
-                        forcedType === "burger" ? "🍔" :
-                            forcedType === "salad" ? "🥗" : "🍖";
-                    else final = symbols[Math.floor(Math.random() * symbols.length)];
-
-                    reel.textContent = final;
-                    result[idx] = final;
-
-                    if (idx === 2) setTimeout(() => checkResult(result, forcedType), 500);
-
-                }, 4200 + idx * 400);
-            });
+    /* ===================== تشغيل اللعبة ===================== */
+    document.getElementById("lever").onclick = function () {
+        if (!allowed) {
+            alert("يجب إدخال رقم الجوال أولاً.");
+            return;
         }
 
-        /* === RESULT === */
-        function checkResult(arr, forced) {
+        startSpin();
 
-            if (forced)
-                return showWin(forced);
+        fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({
+                action: "played",
+                deviceId: deviceId,
+                phone: phone
+            })
+        });
+    };
 
-            if (arr[0] === arr[1] && arr[1] === arr[2]) {
-                if (arr[0] === "🍔") return showWin("burger");
-                if (arr[0] === "🥗") return showWin("salad");
-                if (arr[0] === "🍖") return showWin("wings");
-            }
+    /* ===================== SPIN ===================== */
+    function startSpin() {
+        let result = [];
+        const symbols = ["🍔", "🥗", "🍖", "🍟"];
+        const isWin   = Math.random() < 0.10;
 
-            showLose();
+        let forcedType = null;
+        if (isWin) {
+            let r = Math.random();
+            if (r < 0.10) forcedType = "burger";
+            else if (r < 0.55) forcedType = "salad";
+            else forcedType = "wings";
         }
 
-        function showWin(type) {
-            document.getElementById("popup").style.display = "flex";
+        ["r1", "r2", "r3"].forEach((id, idx) => {
+            let reel = document.getElementById(id);
 
-            if (type === "burger") popupEmoji.textContent = "🍔", popupMsg.textContent = "ربحت وجبة برغر!";
-            if (type === "salad") popupEmoji.textContent = "🥗", popupMsg.textContent = "ربحت سلطة!";
-            if (type === "wings") popupEmoji.textContent = "🍖", popupMsg.textContent = "ربحت أجنحة!";
+            let interval = setInterval(() => {
+                reel.textContent =
+                    symbols[Math.floor(Math.random() * symbols.length)];
+            }, 80);
+
+            setTimeout(() => {
+                clearInterval(interval);
+
+                let final;
+                if (forcedType)
+                    final = forcedType === "burger" ? "🍔" :
+                            forcedType === "salad"  ? "🥗" :
+                                                      "🍖";
+                else
+                    final = symbols[Math.floor(Math.random() * symbols.length)];
+
+                reel.textContent = final;
+                result[idx] = final;
+
+                if (idx === 2) {
+                    setTimeout(() => checkResult(result, forcedType), 500);
+                }
+
+            }, 4200 + idx * 400);
+        });
+    }
+
+    /* ===================== RESULT ===================== */
+    function checkResult(arr, forced) {
+
+        if (forced)
+            return showWin(forced);
+
+        if (arr[0] === arr[1] && arr[1] === arr[2]) {
+            if (arr[0] === "🍔") return showWin("burger");
+            if (arr[0] === "🥗") return showWin("salad");
+            if (arr[0] === "🍖") return showWin("wings");
         }
 
-        function showLose() {
-            document.getElementById("popup").style.display = "flex";
-            popupEmoji.textContent = "😈";
-            popupMsg.textContent = "حظاً أوفر!";
-        }
+        showLose();
+    }
 
-    </script>
+    function showWin(type) {
+        document.getElementById("popup").style.display = "flex";
+
+        if (type === "burger") popupEmoji.textContent = "🍔", popupMsg.textContent = "ربحت وجبة برغر!";
+        if (type === "salad")  popupEmoji.textContent = "🥗", popupMsg.textContent = "ربحت سلطة!";
+        if (type === "wings")  popupEmoji.textContent = "🍖", popupMsg.textContent = "ربحت أجنحة!";
+    }
+
+    function showLose() {
+        document.getElementById("popup").style.display = "flex";
+        popupEmoji.textContent = "😈";
+        popupMsg.textContent   = "حظاً أوفر!";
+    }
+</script>
+
 
 </body>
 </html>
+
 
 
