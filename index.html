@@ -234,12 +234,17 @@ let allowed = false;
 let spinning = false;
 let finished = false;
 
+
 /* ===========================
    1) إدخال رقم الهاتف
 =========================== */
 function submitPhone() {
 
     phone = document.getElementById("phoneInput").value.trim();
+
+
+
+
 
     if (phone.length < 7) {
         alert("رقم غير صالح");
@@ -251,20 +256,91 @@ function submitPhone() {
         .then(r => r.json())
         .then(res => {
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             if (!res.allowed) {
                 alert("هذا الرقم لعب مسبقاً ولا يمكنه اللعب مرة أخرى 😈");
                 return;
             }
 
             // تسجيل الرقم
+
+
+
+
+
             fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     action: "registerPhone",
                     phone: phone
+
                 })
             });
+
 
             allowed = true;
             document.getElementById("phonePopup").style.display = "none";
@@ -292,7 +368,13 @@ document.getElementById("lever").onclick = function () {
 
     spinning = true;
 
+
+
+
+
+
     startSpin();
+
 
     fetch(API_URL, {
         method: "POST",
@@ -303,6 +385,8 @@ document.getElementById("lever").onclick = function () {
         })
     });
 };
+
+
 
 
 /* ===========================
@@ -316,6 +400,8 @@ function startSpin() {
     const isWin = Math.random() < 0.10;
 
     let forcedType = null;
+
+
 
     if (isWin) {
         let r = Math.random();
@@ -331,8 +417,12 @@ function startSpin() {
             reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
         }, 80);
 
+
         setTimeout(() => {
             clearInterval(interval);
+
+
+
 
             let final = forcedType
                 ? (forcedType === "burger" ? "🍔" : forcedType === "salad" ? "🥗" : "🍖")
@@ -341,7 +431,13 @@ function startSpin() {
             reel.textContent = final;
             result[idx] = final;
 
+
+
             if (idx === 2) setTimeout(() => checkResult(result, forcedType), 500);
+
+
+
+
 
         }, 4000 + idx * 400);
     });
@@ -368,10 +464,17 @@ function checkResult(arr, forced) {
         if (arr[0] === "🍖") return showWin("wings");
     }
 
+
     spinning = false;
     finished = true;
     showLose();
 }
+
+
+
+
+
+
 
 
 /* ===========================
@@ -380,6 +483,7 @@ function checkResult(arr, forced) {
 function showWin(type) {
 
     document.getElementById("popup").style.display = "flex";
+
 
     let msg = "";
 
@@ -408,6 +512,11 @@ function showWin(type) {
 }
 
 
+
+
+
+
+
 /* ===========================
    6) الخسارة
 =========================== */
@@ -427,15 +536,4 @@ function showLose() {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
 
