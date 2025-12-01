@@ -195,20 +195,32 @@ function submitPhone() {
         .catch(err => console.error("ERROR:", err));
 }
 
+let spinning = false;   // هل السبين شغال؟
+let finished = false;   // اللعبة انتهت؟
 
 // عند سحب المقبض
 document.getElementById("lever").onclick = function () {
 
+    // لم يدخل رقم
     if (!allowed) {
         alert("يجب إدخال رقم الجوال أولاً");
         return;
     }
 
-    if (spinning) return;     // 🔥 يمنع السحب أكثر من مرة
-    spinning = true;
+    // اللعبة خلصت نهائياً
+    if (finished) {
+        alert("محاولة واحدة فقط! 😈");
+        return;
+    }
+
+    // السبين شغال الآن
+    if (spinning) return;     // يمنع السحب أكثر من مرة
+
+    spinning = true; // نبدأ السبين
 
     startSpin();
 
+    // تسجيل المحاولة في جوجل شيت
     fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -219,6 +231,7 @@ document.getElementById("lever").onclick = function () {
         })
     });
 };
+
 
 
 // تشغيل السبين
@@ -305,10 +318,14 @@ function showWin(type) {
         msg = "مرحبا، ربحت وجبة أجنحة من لعبة Beast Burger 🍖🔥";
     }
 
+    // رابط واتساب ديناميكي
     document.getElementById("waLink").href =
         `https://wa.me/972599443332?text=${encodeURIComponent(msg)}`;
 
     document.getElementById("waLink").style.display = "block";
+
+    spinning = false;   // ✔️ وقف السبين
+    finished = true;    // ✔️ ممنوع يلعب مرة ثانية
 }
 
 
@@ -316,11 +333,15 @@ function showWin(type) {
 function showLose() {
     document.getElementById("popup").style.display = "flex";
 
-    popupTitle.textContent = "حظ أوفر!";   // ← تغيير العنوان
+    popupTitle.textContent = "حظ أوفر!";  
     popupEmoji.textContent = "😈";
     popupMsg.textContent = "حظاً أوفر!";
     document.getElementById("waLink").style.display = "none";
+
+    spinning = false;   // ✔️ وقف السبين
+    finished = true;    // ✔️ ممنوع يلعب مرة ثانية
 }
+
 
 </script>
 
@@ -329,6 +350,7 @@ function showLose() {
 
 </body>
 </html>
+
 
 
 
