@@ -315,10 +315,13 @@ function showWin(type) {
 // رسالة الخسارة
 function showLose() {
     document.getElementById("popup").style.display = "flex";
+
+    popupTitle.textContent = "حظ أوفر!";   // ← تغيير العنوان
     popupEmoji.textContent = "😈";
     popupMsg.textContent = "حظاً أوفر!";
     document.getElementById("waLink").style.display = "none";
 }
+
 </script>
 
 
@@ -326,6 +329,7 @@ function showLose() {
 
 </body>
 </html>
+
 
 
 
