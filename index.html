@@ -221,57 +221,64 @@
 
     
 <script src="client.min.js"></script>
+
 <script>
-    const API_URL = "api/proxy";
+    const API_URL = "/api/proxy"; // أو "https://beast-cfty.vercel.app/api/proxy" الاثنين صح
 
     let deviceId = null;
-    let phone     = "";
-    let allowed   = false;
+    let phone = "";
+    let fingerprintLoaded = false;
+    let allowed = false;
 
-    /* =============== بصمة الجهاز =============== */
-    const client = new ClientJS();
+    // البصمة عن طريق ClientJS
+    let client = new ClientJS();
     deviceId = client.getFingerprint();
+    fingerprintLoaded = true;
 
-    console.log("DEVICE:", deviceId);
+    console.log("DEVICE ID:", deviceId);
 
-    // check device only
+    // فحص الجهاز مباشرة
     fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
         .then(r => r.json())
         .then(res => {
-            console.log("DEVICE CHECK:", res);
+            console.log("CHECK:", res);
             if (!res.allowed) {
                 document.body.innerHTML =
-                    "<h2 style='margin-top:60px;color:white;text-align:center'>لا يمكن اللعب أكثر من مرة 😈</h2>";
+                    "<h2 style='margin-top:50px;color:white;text-align:center'>لا يمكن اللعب أكثر من مرة 😈</h2>";
             }
         })
-        .catch(err => console.log("ERR:", err));
+        .catch(e => console.log("ERR:", e));
 
-    /* ===================== إدخال رقم الهاتف ===================== */
+    // إدخال رقم الهاتف
     function submitPhone() {
+        if (!fingerprintLoaded) {
+            alert("جاري التحقق من جهازك...");
+            return;
+        }
 
         phone = document.getElementById("phoneInput").value.trim();
 
         if (phone.length < 7) {
-            alert("رقم غير صالح.");
+            alert("رقم غير صالح");
             return;
         }
 
-        fetch(`${API_URL}?action=checkPhone&deviceId=${deviceId}&phone=${phone}`)
+        fetch(`${API_URL}?action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
             .then(r => r.json())
             .then(res => {
                 if (!res.allowed) {
-                    alert("هذا الرقم أو الجهاز لعب مسبقًا 😈");
+                    alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
                     return;
                 }
 
-                // تسجيل الرقم
+                // تسجيل الرقم - مهم جداً يكون Content-Type = application/json
                 fetch(API_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         action: "registerPhone",
-                        deviceId: deviceId,
-                        phone: phone
+                        phone: phone,
+                        deviceId: deviceId
                     })
                 });
 
@@ -280,31 +287,29 @@
             });
     }
 
-    /* ===================== تشغيل اللعبة ===================== */
+    // تشغيل اللعبة
     document.getElementById("lever").onclick = function () {
         if (!allowed) {
-            alert("يجب إدخال رقم الجوال أولاً.");
+            alert("يجب إدخال رقم الجوال أولاً");
             return;
         }
-
         startSpin();
 
         fetch(API_URL, {
             method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 action: "played",
-                deviceId: deviceId,
-                phone: phone
+                phone: phone,
+                deviceId: deviceId
             })
         });
     };
 
-    /* ===================== SPIN ===================== */
     function startSpin() {
         let result = [];
         const symbols = ["🍔", "🥗", "🍖", "🍟"];
-        const isWin   = Math.random() < 0.10;
+        const isWin = Math.random() < 0.10;
 
         let forcedType = null;
         if (isWin) {
@@ -318,44 +323,38 @@
             let reel = document.getElementById(id);
 
             let interval = setInterval(() => {
-                reel.textContent =
-                    symbols[Math.floor(Math.random() * symbols.length)];
+                reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
             }, 80);
 
             setTimeout(() => {
                 clearInterval(interval);
 
                 let final;
-                if (forcedType)
-                    final = forcedType === "burger" ? "🍔" :
-                            forcedType === "salad"  ? "🥗" :
-                                                      "🍖";
-                else
+                if (forcedType) {
+                    final = forcedType === "burger" ? "🍔"
+                         : forcedType === "salad" ? "🥗"
+                         : "🍖";
+                } else {
                     final = symbols[Math.floor(Math.random() * symbols.length)];
+                }
 
                 reel.textContent = final;
                 result[idx] = final;
 
-                if (idx === 2) {
-                    setTimeout(() => checkResult(result, forcedType), 500);
-                }
+                if (idx === 2) setTimeout(() => checkResult(result, forcedType), 500);
 
             }, 4200 + idx * 400);
         });
     }
 
-    /* ===================== RESULT ===================== */
     function checkResult(arr, forced) {
-
-        if (forced)
-            return showWin(forced);
+        if (forced) return showWin(forced);
 
         if (arr[0] === arr[1] && arr[1] === arr[2]) {
             if (arr[0] === "🍔") return showWin("burger");
             if (arr[0] === "🥗") return showWin("salad");
             if (arr[0] === "🍖") return showWin("wings");
         }
-
         showLose();
     }
 
@@ -370,13 +369,15 @@
     function showLose() {
         document.getElementById("popup").style.display = "flex";
         popupEmoji.textContent = "😈";
-        popupMsg.textContent   = "حظاً أوفر!";
+        popupMsg.textContent = "حظاً أوفر!";  // زي ما طلبتي
     }
 </script>
 
 
+
 </body>
 </html>
+
 
 
 
