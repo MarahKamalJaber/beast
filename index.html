@@ -64,82 +64,14 @@
         @media(max-width:600px) {
             .reel { width: 72px; height: 72px; font-size: 44px; }
         }
-        .lever-box {
-            position: absolute;
-            left: -5px;
-            bottom: -40px;
-            transform: rotate(12deg);
-        }
-        .lever { cursor: pointer; width: 90px; transition: .25s ease; }
-        .lever.active { transform: rotate(25deg) translateY(10px); }
-        .instructions {
-            margin-top: 50px;
-            font-size: 18px;
-            line-height: 1.7;
-            padding: 0 10px;
-        }
-        #popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-        }
-        .popup-box {
-            background: #0f0a0a;
-            border: 3px solid #ff6a00;
-            padding: 25px;
-            border-radius: 18px;
-            width: 85%;
-            max-width: 350px;
-            text-align: center;
-        }
-        #phonePopup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        .phone-box {
-            background: white;
-            color: black;
-            padding: 25px;
-            border-radius: 15px;
-            width: 85%;
-            max-width: 320px;
-            text-align: center;
-        }
+      .lever-box { position: absolute; left: -5px; bottom: -40px; transform: rotate(12deg); } .lever { cursor: pointer; width: 90px; transition: .25s ease; } .lever.active { transform: rotate(25deg) translateY(10px); } .lever-stick { width: 16px; height: 90px; background: #000; border-radius: 10px; margin: 0 auto; } .lever-ball { width: 55px; height: 55px; background: #ffb58d; border-radius: 50%; box-shadow: 0 6px 12px rgba(0,0,0,0.55); margin-top: -12px; } .instructions { margin-top: 50px; font-size: 18px; line-height: 1.7; padding: 0 10px; } #popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 999; } .popup-box { background: #0f0a0a; border: 3px solid #ff6a00; padding: 25px; border-radius: 18px; width: 85%; max-width: 350px; text-align: center; } #phonePopup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999; } .phone-box { background: white; color: black; padding: 25px; border-radius: 15px; width: 85%; max-width: 320px; text-align: center; }
     </style>
 </head>
 
 <body>
 
 <img src="https://beastburger2025.neocities.org/logo.png" class="logo">
-
-<div class="machine">
-    <div class="screen">
-        <div id="r1" class="reel">🍔</div>
-        <div id="r2" class="reel">🥗</div>
-        <div id="r3" class="reel">🍖</div>
-    </div>
-    <div class="lever-box">
-        <div id="lever" class="lever">
-            <div class="lever-stick"></div>
-            <div class="lever-ball"></div>
-        </div>
-    </div>
-</div>
+<div class="machine"> <div class="screen"> <div id="r1" class="reel">🍔</div> <div id="r2" class="reel">🥗</div> <div id="r3" class="reel">🍖</div> </div> <div class="lever-box"> <div id="lever" class="lever"> <div class="lever-stick"></div> <div class="lever-ball"></div> </div> </div> </div>
 
 <div class="instructions">
     😈 ادخل رقمك وجرب حظّك مع الوحش<br>
@@ -294,38 +226,36 @@ function checkResult(arr, forced) {
 // رسالة الفوز
 function showWin(type) {
     document.getElementById("popup").style.display = "flex";
-    const popupTitle = document.getElementById("popupTitle");
-    const popupMsg = document.getElementById("popupMsg");
-    const popupEmoji = document.getElementById("popupEmoji");
-
-    popupTitle.textContent = "مبرووووك! 🎉";
 
     if (type === "burger") {
-        popupEmoji.textContent = "🍔🔥";
+        popupEmoji.textContent = "🍔";
         popupMsg.textContent = "ربحت وجبة برغر!";
         window.open("https://wa.me/9720599443332?text=لقد%20ربحت%20وجبة%20برغر%20🔥🍔", "_blank");
     }
+
     if (type === "salad") {
-        popupEmoji.textContent = "🥗✨";
+        popupEmoji.textContent = "🥗";
         popupMsg.textContent = "ربحت سلطة!";
-        window.open("https://wa.me/9720599443332?text=لقد%20ربحت%20سلطة%20🥗✨", "_blank");
+        window.open("https://wa.me/9720599443332?text=لقد%20ربحت%20سلطة%20🥗🔥", "_blank");
     }
+
     if (type === "wings") {
-        popupEmoji.textContent = "🍖🔥";
+        popupEmoji.textContent = "🍖";
         popupMsg.textContent = "ربحت أجنحة!";
-        window.open("https://wa.me/9720599443332?text=لقد%20ربحت%20أجنحة%20🔥🍖", "_blank");
+        window.open("https://wa.me/9720599443332?text=لقد%20ربحت%20أجنحة%20🍖🔥", "_blank");
     }
 }
 
 // رسالة الخسارة
 function showLose() {
     document.getElementById("popup").style.display = "flex";
-
+    popupEmoji.textContent = "😈";
+    popupMsg.textContent = "حظاً أوفر!";
     document.getElementById("popupTitle").textContent = "للأسف!";
-    document.getElementById("popupEmoji").textContent = "😈";
-    document.getElementById("popupMsg").textContent = "حظاً أوفر!";
 }
+
 </script>
 
 </body>
 </html>
+
