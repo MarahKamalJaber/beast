@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   const API_URL =
-    "https://script.google.com/macros/s/AKfycbzMrx_znp6aDIeFumMds_UIQ5MeT4yTn6lgZYRnBNo8X5-xGNk-OQ1z_ayqYVXU7es/exec";
+    "https://script.google.com/macros/s/AKfycbwqpBfNy9yQRNen2tLVw6PIwqIv9aIup9F_9IFh1BrcwMiBOB_sZsBYRCZ0A1-muys/exec";
 
   try {
     let url = API_URL;
