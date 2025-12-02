@@ -2,14 +2,29 @@ export default async function handler(req, res) {
   const API_URL =
     "https://script.google.com/macros/s/AKfycbzUEptyIvAe2IgfS22wRMjXeNuMvjt5RKLns4dvxZKmXrLSD9saJMDdaGHCTFXTY8c/exec";
 
-  try {
-    let url = API_URL;
+  // CORS headers عشان المتصفح ما يمنع الطلبات
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
 
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
+  try {
     if (req.method === "GET") {
-      url += "?" + new URLSearchParams(req.query).toString();
+      const url = API_URL + "?" + new URLSearchParams(req.query).toString();
       const response = await fetch(url);
-      const data = await response.json();
-      return res.status(200).json(data);
+      const text = await response.text();
+
+      try {
+        const data = JSON.parse(text);
+        return res.status(200).json(data);
+      } catch (e) {
+        return res
+          .status(500)
+          .json({ error: "Invalid JSON from Apps Script", raw: text });
+      }
     }
 
     if (req.method === "POST") {
@@ -18,8 +33,17 @@ export default async function handler(req, res) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(req.body)
       });
-      const data = await response.json();
-      return res.status(200).json(data);
+
+      const text = await response.text();
+
+      try {
+        const data = JSON.parse(text);
+        return res.status(200).json(data);
+      } catch (e) {
+        return res
+          .status(500)
+          .json({ error: "Invalid JSON from Apps Script", raw: text });
+      }
     }
 
     return res.status(400).json({ error: "Invalid method" });
