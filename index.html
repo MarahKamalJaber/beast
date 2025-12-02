@@ -16,19 +16,19 @@
             overflow-x: hidden;
         }
 
-            body::before {
-                content: "BEAST BURGER BEAST BURGER BEAST BURGER BEAST BURGER ";
-                position: fixed;
-                top: -15%;
-                left: -25%;
-                width: 180%;
-                height: 180%;
-                font-size: 80px;
-                font-weight: 900;
-                color: rgba(0,0,0,0.12);
-                transform: rotate(-28deg);
-                z-index: -1;
-            }
+        body::before {
+            content: "BEAST BURGER BEAST BURGER BEAST BURGER BEAST BURGER ";
+            position: fixed;
+            top: -15%;
+            left: -25%;
+            width: 180%;
+            height: 180%;
+            font-size: 80px;
+            font-weight: 900;
+            color: rgba(0,0,0,0.12);
+            transform: rotate(-28deg);
+            z-index: -1;
+        }
 
         .logo {
             width: 135px;
@@ -89,9 +89,9 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         }
 
-            .wa-btn:hover {
-                background: #1eb158;
-            }
+        .wa-btn:hover {
+            background: #1eb158;
+        }
 
         .lever-box {
             position: absolute;
@@ -106,9 +106,9 @@
             transition: .25s ease;
         }
 
-            .lever.active {
-                transform: rotate(25deg) translateY(10px);
-            }
+        .lever.active {
+            transform: rotate(25deg) translateY(10px);
+        }
 
         .lever-stick {
             width: 16px;
@@ -184,9 +184,22 @@
 
 <body>
 
+    <!-- غيّري src إذا حابة من Vercel بدال GitHub -->
     <img src="https://raw.githubusercontent.com/MarahKamalJaber/beast/main/logo.png" class="logo">
 
-    <div class="machine"> <div class="screen"> <div id="r1" class="reel">🍔</div> <div id="r2" class="reel">🥗</div> <div id="r3" class="reel">🍖</div> </div> <div class="lever-box"> <div id="lever" class="lever"> <div class="lever-stick"></div> <div class="lever-ball"></div> </div> </div> </div>
+    <div class="machine">
+        <div class="screen">
+            <div id="r1" class="reel">🍔</div>
+            <div id="r2" class="reel">🥗</div>
+            <div id="r3" class="reel">🍖</div>
+        </div>
+        <div class="lever-box">
+            <div id="lever" class="lever">
+                <div class="lever-stick"></div>
+                <div class="lever-ball"></div>
+            </div>
+        </div>
+    </div>
 
     <div class="instructions">
         😈 ادخل رقمك وجرب حظّك مع الوحش<br>
@@ -207,7 +220,6 @@
                   font-weight:bold; display:block;">
                 تواصل عبر واتساب 📩
             </a>
-
         </div>
     </div>
 
@@ -224,47 +236,80 @@
             </button>
         </div>
     </div>
+
+    <!-- ClientJS fingerprint -->
     <script src="client.min.js"></script>
 
     <script>
+        // لو الـ HTML على نفس مشروع Vercel اللي فيه /api/proxy خليه هيك:
         const API_URL = "/api/proxy";
+        // لو في يوم استضفتي الـ HTML بمكان آخر: استخدمي رابط Vercel الكامل.
 
         let deviceId = null;
         let phone = "";
-        let fingerprintLoaded = false;
         let allowed = false;
-        let spinning = false;   // 🔥 يمنع تكرار السحب
+        let spinning = false;
+
+        // عناصر الـ DOM
+        const popup = document.getElementById("popup");
+        const popupTitle = document.getElementById("popupTitle");
+        const popupEmoji = document.getElementById("popupEmoji");
+        const popupMsg = document.getElementById("popupMsg");
+        const waLink = document.getElementById("waLink");
+        const phonePopup = document.getElementById("phonePopup");
+        const phoneInput = document.getElementById("phoneInput");
+        const lever = document.getElementById("lever");
 
         // بصمة الجهاز
-        let client = new ClientJS();
+        const client = new ClientJS();
         deviceId = client.getFingerprint();
-        fingerprintLoaded = true;
 
-        // فحص الجهاز
-        fetch(`${API_URL}?action=checkDeviceOnly&deviceId=${deviceId}`)
-            .then(r => r.json())
-            .then(res => {
-                if (!res.allowed) {
-                    document.body.innerHTML =
-                        "<h2 style='margin-top:50px;color:white;text-align:center'>لا يمكن اللعب أكثر من مرة 😈</h2>";
-                }
+        // فحص الجهاز عند الدخول (لو الجهاز لعب من قبل ممنوع يدخل رقم أصلاً)
+        (function checkDevice() {
+            const params = new URLSearchParams({
+                action: "checkDeviceOnly",
+                deviceId: deviceId
             });
+
+            fetch(`${API_URL}?${params.toString()}`)
+                .then(r => r.json())
+                .then(res => {
+                    if (!res.allowed) {
+                        // الجهاز لعب قبل هيك → ممنوع بشكل كامل
+                        phonePopup.style.display = "none";
+                        alert("هذا الجهاز استخدم اللعبة مسبقاً ولا يمكنه اللعب مرة أخرى 😈");
+                    }
+                })
+                .catch(err => {
+                    console.warn("Device check failed:", err);
+                    // إذا في مشكلة اتصال ما نمنع، الاعتماد الأساسي على رقم الجوال
+                });
+        })();
 
         // إدخال رقم الجوال
         function submitPhone() {
-            phone = document.getElementById("phoneInput").value.trim();
+            phone = phoneInput.value.trim();
 
             if (phone.length < 7) {
                 alert("رقم غير صالح");
                 return;
             }
 
-            fetch(`${API_URL}?action=checkPhone&phone=${phone}&deviceId=${deviceId}`)
+            const params = new URLSearchParams({
+                action: "checkPhone",
+                phone: phone,
+                deviceId: deviceId
+            });
+
+            fetch(`${API_URL}?${params.toString()}`)
                 .then(r => r.json())
                 .then(res => {
+                    if (!res || res.error) {
+                        alert("في مشكلة في السيرفر، حاول مرة أخرى.");
+                        return;
+                    }
 
                     if (!res.allowed) {
-
                         if (res.reason === "phone_exists") {
                             alert("هذا الرقم لعب مسبقاً ولا يمكنه اللعب مرة أخرى نهائياً 😈");
                             return;
@@ -283,29 +328,30 @@
                             phone: phone,
                             deviceId: deviceId
                         })
-                    });
+                    }).catch(err => console.error("ERROR saving phone:", err));
 
-                    document.getElementById("phonePopup").style.display = "none";
+                    phonePopup.style.display = "none";
                     allowed = true;
-
                 })
-                .catch(err => console.error("ERROR:", err));
+                .catch(err => {
+                    console.error("ERROR checkPhone:", err);
+                    alert("في مشكلة في الاتصال، حاول مرة أخرى بعد قليل.");
+                });
         }
 
-
         // عند سحب المقبض
-        document.getElementById("lever").onclick = function () {
-
+        lever.onclick = function () {
             if (!allowed) {
                 alert("يجب إدخال رقم الجوال أولاً");
                 return;
             }
 
-            if (spinning) return;     // 🔥 يمنع السحب أكثر من مرة
+            if (spinning) return;  // منع السحب أكثر من مرة
             spinning = true;
 
             startSpin();
 
+            // تسجيل أنه لعب
             fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -314,17 +360,16 @@
                     phone: phone,
                     deviceId: deviceId
                 })
-            });
+            }).catch(err => console.error("ERROR played:", err));
         };
-
 
         // تشغيل السبين
         function startSpin() {
             let result = [];
             const symbols = ["🍔", "🥗", "🍖", "🍟"];
 
+            // احتمال الفوز
             const isWin = Math.random() < 0.10;
-
             let forcedType = null;
 
             if (isWin) {
@@ -344,26 +389,26 @@
                 setTimeout(() => {
                     clearInterval(interval);
 
-                    let final = forcedType ?
-                        (forcedType === "burger" ? "🍔" : forcedType === "salad" ? "🥗" : "🍖") :
-                        symbols[Math.floor(Math.random() * symbols.length)];
+                    let final = forcedType
+                        ? (forcedType === "burger" ? "🍔" : forcedType === "salad" ? "🥗" : "🍖")
+                        : symbols[Math.floor(Math.random() * symbols.length)];
 
                     reel.textContent = final;
                     result[idx] = final;
 
-                    if (idx === 2) setTimeout(() => checkResult(result, forcedType), 500);
+                    if (idx === 2) {
+                        setTimeout(() => checkResult(result, forcedType), 500);
+                    }
 
                 }, 4200 + idx * 400);
             });
         }
 
-
         // التحقق من النتيجة
         function checkResult(arr, forced) {
-
             if (forced) {
                 spinning = false;
-                allowed = false; // 🔥 يمنع اللعب مرة ثانية
+                allowed = false; // يمنع اللعب مرة ثانية
                 return showWin(forced);
             }
 
@@ -374,13 +419,13 @@
             }
 
             spinning = false;
-            allowed = false;   // 🔥 حتى الخاسر لا يمكنه اللعب ثانية
+            allowed = false;   // حتى الخاسر لا يمكنه اللعب ثانية
             showLose();
         }
 
-
         function showWin(type) {
-            document.getElementById("popup").style.display = "flex";
+            popup.style.display = "flex";
+            popupTitle.textContent = "مبروووك! 🎉";
 
             let msg = "";
 
@@ -388,36 +433,29 @@
                 popupEmoji.textContent = "🍔";
                 popupMsg.textContent = "ربحت وجبة برغر!";
                 msg = "مرحبا، ربحت وجبة برغر من لعبة Beast Burger 🎉🍔";
-            }
-
-            if (type === "salad") {
+            } else if (type === "salad") {
                 popupEmoji.textContent = "🥗";
                 popupMsg.textContent = "ربحت سلطة!";
                 msg = "مرحبا، ربحت سلطة من لعبة Beast Burger 🥗🔥";
-            }
-
-            if (type === "wings") {
+            } else if (type === "wings") {
                 popupEmoji.textContent = "🍖";
                 popupMsg.textContent = "ربحت أجنحة!";
                 msg = "مرحبا، ربحت وجبة أجنحة من لعبة Beast Burger 🍖🔥";
             }
 
-            document.getElementById("waLink").href =
-                `https://wa.me/972599443332?text=${encodeURIComponent(msg)}`;
-
-            document.getElementById("waLink").style.display = "block";
+            waLink.href = `https://wa.me/972599443332?text=${encodeURIComponent(msg)}`;
+            waLink.style.display = "block";
         }
-
 
         // رسالة الخسارة
         function showLose() {
-            document.getElementById("popup").style.display = "flex";
+            popup.style.display = "flex";
+            popupTitle.textContent = "حظاً أوفر 😈";
             popupEmoji.textContent = "😈";
             popupMsg.textContent = "حظاً أوفر!";
-            document.getElementById("waLink").style.display = "none";
+            waLink.style.display = "none";
         }
     </script>
 
 </body>
 </html>
-
