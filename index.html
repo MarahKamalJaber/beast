@@ -265,26 +265,40 @@
         deviceId = client.getFingerprint();
 
         // فحص الجهاز عند الدخول (لو الجهاز لعب من قبل ممنوع يدخل رقم أصلاً)
-        (function checkDevice() {
-            const params = new URLSearchParams({
-                action: "checkDeviceOnly",
-                deviceId: deviceId
-            });
+       (function checkDevice() {
+    const params = new URLSearchParams({
+        action: "checkDeviceOnly",
+        deviceId: deviceId
+    });
 
-            fetch(`${API_URL}?${params.toString()}`)
-                .then(r => r.json())
-                .then(res => {
-                    if (!res.allowed) {
-                        // الجهاز لعب قبل هيك → ممنوع بشكل كامل
-                        phonePopup.style.display = "none";
-                        alert("هذا الجهاز استخدم اللعبة مسبقاً ولا يمكنه اللعب مرة أخرى 😈");
-                    }
-                })
-                .catch(err => {
-                    console.warn("Device check failed:", err);
-                    // إذا في مشكلة اتصال ما نمنع، الاعتماد الأساسي على رقم الجوال
-                });
-        })();
+    fetch(`${API_URL}?${params.toString()}`)
+        .then(r => r.json())
+        .then(res => {
+            if (!res.allowed) {
+
+                // إخفاء شاشة إدخال الرقم
+                if (phonePopup) phonePopup.style.display = "none";
+
+                // إخفاء ماكينة السبين
+                const machine = document.querySelector(".machine");
+                if (machine) machine.style.display = "none";
+
+                // منع الضغط على الذراع تماماً
+                if (lever) lever.style.pointerEvents = "none";
+
+                // منع التشغيل منطقياً
+                allowed = false;
+                spinning = true;
+
+                // رسالة واحدة فقط بدون أي خرابيش
+                alert("هذا الجهاز استخدم اللعبة مسبقاً ولا يمكنه اللعب مرة أخرى 😈");
+            }
+        })
+        .catch(err => {
+            console.warn("Device check failed:", err);
+        });
+})();
+
 
         // إدخال رقم الجوال
         function submitPhone() {
@@ -459,3 +473,4 @@
 
 </body>
 </html>
+
