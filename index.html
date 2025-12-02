@@ -6,147 +6,21 @@
     <title>Beast Burger Spin</title>
 
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-            background: #7a1824;
-            color: #fff;
-            text-align: center;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: "BEAST BURGER BEAST BURGER BEAST BURGER BEAST BURGER ";
-            position: fixed;
-            top: -15%;
-            left: -25%;
-            width: 180%;
-            height: 180%;
-            font-size: 80px;
-            font-weight: 900;
-            color: rgba(0,0,0,0.12);
-            transform: rotate(-28deg);
-            z-index: -1;
-        }
-
-        .logo {
-            width: 135px;
-            margin: 25px auto 10px;
-            display: block;
-        }
-
-        .machine {
-            width: 92%;
-            max-width: 480px;
-            margin: 35px auto 0;
-            background: linear-gradient(180deg,#ff8a20,#ff5a00);
-            padding: 28px 20px 40px;
-            border-radius: 38px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.45);
-            position: relative;
-        }
-
-        .screen {
-            background: #0a0607;
-            border-radius: 28px;
-            padding: 30px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .reel {
-            width: 90px;
-            height: 90px;
-            background: #1a0f13;
-            border-radius: 20px;
-            font-size: 52px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        @media(max-width:600px) {
-            .reel {
-                width: 72px;
-                height: 72px;
-                font-size: 44px;
-            }
-        }
-
-        .lever-box {
-            position: absolute;
-            left: -5px;
-            bottom: -40px;
-            transform: rotate(12deg);
-        }
-
-        .lever {
-            cursor: pointer;
-            width: 90px;
-            transition: .25s ease;
-        }
-
-        .lever.active {
-            transform: rotate(25deg) translateY(10px);
-        }
-
-        .lever-stick {
-            width: 16px;
-            height: 90px;
-            background: #000;
-            border-radius: 10px;
-            margin: 0 auto;
-        }
-
-        .lever-ball {
-            width: 55px;
-            height: 55px;
-            background: #ffb58d;
-            border-radius: 50%;
-            box-shadow: 0 0 50px rgba(0,0,0,0.55);
-            margin-top: -12px;
-        }
-
-        .instructions {
-            margin-top: 50px;
-            font-size: 18px;
-            line-height: 1.7;
-            padding: 0 10px;
-        }
-
-        #popup, #phonePopup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .popup-box, .phone-box {
-            background: #0f0a0a;
-            border: 3px solid #ff6a00;
-            padding: 25px;
-            border-radius: 18px;
-            width: 85%;
-            max-width: 350px;
-            text-align: center;
-        }
-
-        .phone-box {
-            background: white;
-            color: black;
-            border: none;
-        }
+        body { margin: 0; padding: 0; font-family: 'Cairo', sans-serif; background: #7a1824; color: #fff; text-align: center; overflow-x: hidden; }
+        body::before { content: "BEAST BURGER BEAST BURGER BEAST BURGER BEAST BURGER "; position: fixed; top: -15%; left: -25%; width: 180%; height: 180%; font-size: 80px; font-weight: 900; color: rgba(0,0,0,0.12); transform: rotate(-28deg); z-index: -1; }
+        .logo { width: 135px; margin: 25px auto 10px; display: block; }
+        .machine { width: 92%; max-width: 480px; margin: 35px auto 0; background: linear-gradient(180deg,#ff8a20,#ff5a00); padding: 28px 20px 40px; border-radius: 38px; box-shadow: 0 0 50px rgba(0,0,0,0.45); position: relative; }
+        .screen { background: #0a0607; border-radius: 28px; padding: 30px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .reel { width: 90px; height: 90px; background: #1a0f13; border-radius: 20px; font-size: 52px; display: flex; justify-content: center; align-items: center; }
+        @media(max-width:600px){ .reel{ width: 72px; height: 72px; font-size: 44px; } }
+        .lever-box { position: absolute; left: -5px; bottom: -40px; transform: rotate(12deg); }
+        .lever { cursor: pointer; width: 90px; transition: .25s ease; }
+        .instructions { margin-top: 50px; font-size: 18px; line-height: 1.7; padding: 0 10px; }
+        #popup,#phonePopup { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:9999; }
+        .popup-box,.phone-box { background:#0f0a0a; border:3px solid #ff6a00; padding:25px; border-radius:18px; width:85%; max-width:350px; text-align:center; }
+        .phone-box { background:white; color:black; border:none; }
     </style>
 </head>
-
 <body>
 
 <img src="https://raw.githubusercontent.com/MarahKamalJaber/beast/main/logo.png" class="logo">
@@ -171,22 +45,20 @@
 👉 <b>اضغط على الذراع لتشغيل اللعبة</b>
 </div>
 
-
-<!-- RESULTS POPUP -->
 <div id="popup">
     <div class="popup-box">
         <h2 id="popupTitle">مبروووك!</h2>
         <div id="popupEmoji" style="font-size:40px;">🔥🍔🔥</div>
         <p id="popupMsg"></p>
-        <a id="waLink" href="#" target="_blank" style="display:none;margin-top:15px;
-           padding:12px;background:#25D366;color:white;border-radius:10px;font-size:18px;
-           text-decoration:none;font-weight:bold;display:block;">
+        <a id="waLink" href="#" target="_blank"
+           style="display:none;margin-top:15px;padding:12px;background:#25D366;
+           color:white;border-radius:10px;font-size:18px;text-decoration:none;font-weight:bold;">
             تواصل عبر واتساب 📩
         </a>
     </div>
 </div>
 
-<!-- PHONE INPUT POPUP -->
+<!-- Phone Input -->
 <div id="phonePopup" style="display:flex;">
     <div class="phone-box">
         <h2>أدخل رقم جوالك</h2>
@@ -194,7 +66,8 @@
         <input id="phoneInput" type="tel" placeholder="059XXXXXXX"
                style="width:95%;padding:12px;border-radius:10px;border:2px solid #ff5a00;font-size:18px;">
         <button onclick="submitPhone()"
-                style="margin-top:15px;width:100%;padding:12px;font-size:18px;background:#ff5a00;color:white;border:none;border-radius:10px;">
+                style="margin-top:15px;width:100%;padding:12px;font-size:18px;
+                background:#ff5a00;color:white;border:none;border-radius:10px;">
             متابعة
         </button>
     </div>
@@ -203,34 +76,21 @@
 <script src="client.min.js"></script>
 
 <script>
-// —————————————— (1) بصمة ثابتة + LocalStorage ——————————————— //
-
+/* —————————————— (1) بصمة ثابتة + LocalStorage ——————————————— */
 function stableDeviceId() {
-    const client = new ClientJS();
-    const f1 = client.getFingerprint();
-    const f2 = navigator.userAgent;
-    const f3 = screen.width + "x" + screen.height;
-
-    const raw = f1 + "|" + f2 + "|" + f3;
-
-    let hash = 0;
-    for (let i = 0; i < raw.length; i++) {
-        hash = (hash << 5) - hash + raw.charCodeAt(i);
-        hash |= 0;
-    }
-    return "D" + Math.abs(hash);
+    const c = new ClientJS();
+    const raw = c.getFingerprint() + navigator.userAgent + screen.width + screen.height;
+    let h = 0;
+    for (let i = 0; i < raw.length; i++) { h = (h<<5)-h + raw.charCodeAt(i); h |= 0; }
+    return "D" + Math.abs(h);
 }
-
 let deviceId = localStorage.getItem("device_key");
 if (!deviceId) {
     deviceId = stableDeviceId();
     localStorage.setItem("device_key", deviceId);
 }
 
-// —————————————— (2) إعداد المتغيرات ——————————————— //
-
 const API_URL = "/api/proxy";
-
 let phone = "";
 let allowed = false;
 let spinning = false;
@@ -244,46 +104,58 @@ const phonePopup = document.getElementById("phonePopup");
 const phoneInput = document.getElementById("phoneInput");
 const lever = document.getElementById("lever");
 
-// —————————————— (3) إدخال رقم الجوال + فحص جهاز + رقم معاً ——————————————— //
+/* —————————————— (2) فحص الجهاز أول ما يفتح الموقع ——————————————— */
+(function checkDeviceFirst() {
+    const params = new URLSearchParams({
+        action: "checkDeviceOnly",
+        deviceId: deviceId
+    });
 
+    fetch(`${API_URL}?${params}`)
+        .then(r => r.json())
+        .then(res => {
+            if (!res.allowed) {
+                phonePopup.style.display = "none";
+                document.querySelector(".machine").style.display = "none";
+                lever.style.pointerEvents = "none";
+
+                document.querySelector(".instructions").innerHTML = `
+                    <h2 style="font-size:26px;margin-bottom:10px;">🚫 ممنوع اللعب</h2>
+                    <p style="font-size:20px;">هذا الجهاز استخدم اللعبة مسبقًا ولا يمكنه اللعب مرة أخرى 😈</p>
+                `;
+
+                allowed = false;
+                spinning = true;
+            }
+        });
+})();
+
+/* —————————————— (3) إدخال الرقم ——————————————— */
 function submitPhone() {
     phone = phoneInput.value.trim();
 
-    if (phone.length < 7) {
-        alert("رقم غير صالح");
-        return;
-    }
+    if (phone.length < 7) return alert("رقم غير صالح");
 
     const params = new URLSearchParams({
-        action: "checkPlayer",
+        action: "checkPhone",
         phone: phone,
         deviceId: deviceId
     });
 
-    fetch(`${API_URL}?${params.toString()}`)
+    fetch(`${API_URL}?${params}`)
         .then(r => r.json())
         .then(res => {
-            if (!res || res.error) {
-                alert("في مشكلة في السيرفر، حاول مرة أخرى.");
-                return;
-            }
-
             if (!res.allowed) {
-                if (res.reason === "device_exists") {
-                    alert("هذا الجهاز استخدم اللعبة مسبقاً ولا يمكنه اللعب مرة أخرى 😈");
-                    return;
-                }
+                if (res.reason === "device_exists")
+                    return alert("هذا الجهاز استخدم اللعبة مسبقاً 😈");
 
-                if (res.reason === "phone_exists") {
-                    alert("هذا الرقم لعب مسبقاً ولا يمكنه اللعب مرة أخرى 😈");
-                    return;
-                }
+                if (res.reason === "phone_exists")
+                    return alert("هذا الرقم لعب مسبقاً 😈");
 
-                alert("غير مسموح باللعب.");
-                return;
+                return alert("غير مسموح باللعب.");
             }
 
-            // جهاز جديد + رقم جديد → نسجّلهم
+            // سجل الرقم والجهاز
             fetch(API_URL, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -292,132 +164,106 @@ function submitPhone() {
                     phone: phone,
                     deviceId: deviceId
                 })
-            }).catch(err => console.error("ERROR saving phone:", err));
+            });
 
             phonePopup.style.display = "none";
             allowed = true;
-        })
-        .catch(err => {
-            console.error("ERROR checkPlayer:", err);
-            alert("في مشكلة في الاتصال، حاول مرة أخرى بعد قليل.");
         });
 }
 
-// —————————————— (4) السحب ——————————————— //
-
+/* —————————————— (4) المقبض ——————————————— */
 lever.onclick = function () {
-    if (!allowed) {
-        alert("يجب إدخال رقم الجوال أولاً");
-        return;
-    }
-
+    if (!allowed) return alert("يجب إدخال رقم الجوال أولاً");
     if (spinning) return;
     spinning = true;
 
     startSpin();
 
     fetch(API_URL, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            action: "played",
-            phone: phone,
-            deviceId: deviceId
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            action:"played",
+            phone:phone,
+            deviceId:deviceId
         })
-    }).catch(err => console.error("ERROR played:", err));
+    });
 };
 
-// —————————————— (5) السبين ——————————————— //
-
+/* —————————————— (5) السبين ——————————————— */
 function startSpin() {
     let result = [];
-    const symbols = ["🍔", "🥗", "🍖", "🍟"];
-
-    const isWin = Math.random() < 0.10;
+    const symbols = ["🍔","🥗","🍖","🍟"];
+    const isWin = Math.random()<0.10;
     let forcedType = null;
 
     if (isWin) {
         let r = Math.random();
-        if (r < 0.01) forcedType = "burger";
-        else if (r < 0.46) forcedType = "salad";
-        else forcedType = "wings";
+        if (r<0.01) forcedType="burger";
+        else if (r<0.46) forcedType="salad";
+        else forcedType="wings";
     }
 
-    ["r1", "r2", "r3"].forEach((id, idx) => {
-        let reel = document.getElementById(id);
+    ["r1","r2","r3"].forEach((id,idx)=>{
+        let reel=document.getElementById(id);
+        let interval=setInterval(()=>{
+            reel.textContent=symbols[Math.floor(Math.random()*symbols.length)];
+        },80);
 
-        let interval = setInterval(() => {
-            reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-        }, 80);
-
-        setTimeout(() => {
+        setTimeout(()=>{
             clearInterval(interval);
-
             let final = forcedType
-                ? (forcedType === "burger" ? "🍔" : forcedType === "salad" ? "🥗" : "🍖")
-                : symbols[Math.floor(Math.random() * symbols.length)];
+                ? (forcedType==="burger"?"🍔":forcedType==="salad"?"🥗":"🍖")
+                : symbols[Math.floor(Math.random()*symbols.length)];
 
-            reel.textContent = final;
-            result[idx] = final;
+            reel.textContent=final;
+            result[idx]=final;
 
-            if (idx === 2) {
-                setTimeout(() => checkResult(result, forcedType), 500);
-            }
+            if(idx===2)setTimeout(()=>checkResult(result,forcedType),500);
 
-        }, 4200 + idx * 400);
+        },4200+idx*400);
     });
 }
 
-// —————————————— (6) فحص النتيجة ——————————————— //
-
-function checkResult(arr, forced) {
-    if (forced) {
-        spinning = false;
-        allowed = false;
+/* —————————————— (6) النتيجة ——————————————— */
+function checkResult(arr,forced){
+    if(forced){
+        spinning=false;
+        allowed=false;
         return showWin(forced);
     }
 
-    if (arr[0] === arr[1] && arr[1] === arr[2]) {
-        if (arr[0] === "🍔") return showWin("burger");
-        if (arr[0] === "🥗") return showWin("salad");
-        if (arr[0] === "🍖") return showWin("wings");
+    if(arr[0]===arr[1] && arr[1]===arr[2]){
+        if(arr[0]==="🍔")return showWin("burger");
+        if(arr[0]==="🥗")return showWin("salad");
+        if(arr[0]==="🍖")return showWin("wings");
     }
 
-    spinning = false;
-    allowed = false;
+    spinning=false;
+    allowed=false;
     showLose();
 }
 
-// —————————————— (7) الفوز ——————————————— //
+/* —————————————— (7) الفوز ——————————————— */
+function showWin(type){
+    popup.style.display="flex";
+    popupTitle.textContent="مبروووك! 🎉";
 
-function showWin(type) {
-    popup.style.display = "flex";
-    popupTitle.textContent = "مبروووك! 🎉";
+    if(type==="burger"){ popupEmoji.textContent="🍔"; popupMsg.textContent="ربحت وجبة برغر!"; }
+    else if(type==="salad"){ popupEmoji.textContent="🥗"; popupMsg.textContent="ربحت سلطة!"; }
+    else { popupEmoji.textContent="🍖"; popupMsg.textContent="ربحت أجنحة!"; }
 
-    if (type === "burger") {
-        popupEmoji.textContent = "🍔";
-        popupMsg.textContent = "ربحت وجبة برغر!";
-    } else if (type === "salad") {
-        popupEmoji.textContent = "🥗";
-        popupMsg.textContent = "ربحت سلطة!";
-    } else {
-        popupEmoji.textContent = "🍖";
-        popupMsg.textContent = "ربحت أجنحة!";
-    }
-
-    let msg = `مرحبا، ربحت من لعبة Beast Burger 🎉`;
-    waLink.href = `https://wa.me/972599443332?text=${encodeURIComponent(msg)}`;
-    waLink.style.display = "block";
+    waLink.href=`https://wa.me/972599443332?text=${encodeURIComponent("ربحت من لعبة Beast Burger 🎉")}`;
+    waLink.style.display="block";
 }
 
-// —————————————— (8) الخسارة ——————————————— //
-
-function showLose() {
-    popup.style.display = "flex";
-    popupTitle.textContent = "حظاً أوفر 😈";
-    popupEmoji.textContent = "😈";
-    popupMsg.textContent = "حظاً أوفر!";
-    waLink.style.display = "none";
+/* —————————————— (8) الخسارة ——————————————— */
+function showLose(){
+    popup.style.display="flex";
+    popupTitle.textContent="حظاً أوفر 😈";
+    popupEmoji.textContent="😈";
+    popupMsg.textContent="حظاً أوفر!";
+    waLink.style.display="none";
 }
 </script>
 
