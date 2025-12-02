@@ -12,15 +12,33 @@
         .machine { width: 92%; max-width: 480px; margin: 35px auto 0; background: linear-gradient(180deg,#ff8a20,#ff5a00); padding: 28px 20px 40px; border-radius: 38px; box-shadow: 0 0 50px rgba(0,0,0,0.45); position: relative; }
         .screen { background: #0a0607; border-radius: 28px; padding: 30px 20px; display: flex; justify-content: space-between; align-items: center; }
         .reel { width: 90px; height: 90px; background: #1a0f13; border-radius: 20px; font-size: 52px; display: flex; justify-content: center; align-items: center; }
+
         @media(max-width:600px){ .reel{ width: 72px; height: 72px; font-size: 44px; } }
+
+        /* 🔥 الذراع — لازم ترجع */
         .lever-box { position: absolute; left: -5px; bottom: -40px; transform: rotate(12deg); }
         .lever { cursor: pointer; width: 90px; transition: .25s ease; }
+        .lever-stick { width: 16px; height: 90px; background: #000; border-radius: 10px; margin: 0 auto; }
+        .lever-ball { width: 55px; height: 55px; background: #ffb58d; border-radius: 50%; box-shadow: 0 0 50px rgba(0,0,0,0.55); margin-top: -12px; }
+
         .instructions { margin-top: 50px; font-size: 18px; line-height: 1.7; padding: 0 10px; }
-        #popup,#phonePopup { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:9999; }
-        .popup-box,.phone-box { background:#0f0a0a; border:3px solid #ff6a00; padding:25px; border-radius:18px; width:85%; max-width:350px; text-align:center; }
+
+        #popup,#phonePopup {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.85);
+            display:none; justify-content:center; align-items:center;
+            z-index:9999;
+        }
+
+        .popup-box,.phone-box {
+            background:#0f0a0a; border:3px solid #ff6a00; padding:25px;
+            border-radius:18px; width:85%; max-width:350px; text-align:center;
+        }
+
         .phone-box { background:white; color:black; border:none; }
     </style>
 </head>
+
 <body>
 
 <img src="https://raw.githubusercontent.com/MarahKamalJaber/beast/main/logo.png" class="logo">
@@ -31,6 +49,7 @@
         <div id="r2" class="reel">🥗</div>
         <div id="r3" class="reel">🍖</div>
     </div>
+
     <div class="lever-box">
         <div id="lever" class="lever">
             <div class="lever-stick"></div>
@@ -45,6 +64,7 @@
 👉 <b>اضغط على الذراع لتشغيل اللعبة</b>
 </div>
 
+<!-- RESULTS -->
 <div id="popup">
     <div class="popup-box">
         <h2 id="popupTitle">مبروووك!</h2>
@@ -58,13 +78,15 @@
     </div>
 </div>
 
-<!-- Phone Input -->
+<!-- PHONE INPUT -->
 <div id="phonePopup" style="display:flex;">
     <div class="phone-box">
         <h2>أدخل رقم جوالك</h2>
         <p>محاولة واحدة فقط</p>
+
         <input id="phoneInput" type="tel" placeholder="059XXXXXXX"
                style="width:95%;padding:12px;border-radius:10px;border:2px solid #ff5a00;font-size:18px;">
+
         <button onclick="submitPhone()"
                 style="margin-top:15px;width:100%;padding:12px;font-size:18px;
                 background:#ff5a00;color:white;border:none;border-radius:10px;">
@@ -76,7 +98,8 @@
 <script src="client.min.js"></script>
 
 <script>
-/* —————————————— (1) بصمة ثابتة + LocalStorage ——————————————— */
+
+/* —————————————— بصمة ثابتة ——————————————— */
 function stableDeviceId() {
     const c = new ClientJS();
     const raw = c.getFingerprint() + navigator.userAgent + screen.width + screen.height;
@@ -84,6 +107,7 @@ function stableDeviceId() {
     for (let i = 0; i < raw.length; i++) { h = (h<<5)-h + raw.charCodeAt(i); h |= 0; }
     return "D" + Math.abs(h);
 }
+
 let deviceId = localStorage.getItem("device_key");
 if (!deviceId) {
     deviceId = stableDeviceId();
@@ -104,7 +128,7 @@ const phonePopup = document.getElementById("phonePopup");
 const phoneInput = document.getElementById("phoneInput");
 const lever = document.getElementById("lever");
 
-/* —————————————— (2) فحص الجهاز أول ما يفتح الموقع ——————————————— */
+/* —————————————— فحص الجهاز أول ما يدخل ——————————————— */
 (function checkDeviceFirst() {
     const params = new URLSearchParams({
         action: "checkDeviceOnly",
@@ -130,7 +154,7 @@ const lever = document.getElementById("lever");
         });
 })();
 
-/* —————————————— (3) إدخال الرقم ——————————————— */
+/* —————————————— إدخال الرقم ——————————————— */
 function submitPhone() {
     phone = phoneInput.value.trim();
 
@@ -155,7 +179,7 @@ function submitPhone() {
                 return alert("غير مسموح باللعب.");
             }
 
-            // سجل الرقم والجهاز
+            // تسجيل
             fetch(API_URL, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -171,7 +195,7 @@ function submitPhone() {
         });
 }
 
-/* —————————————— (4) المقبض ——————————————— */
+/* —————————————— تشغيل السبين ——————————————— */
 lever.onclick = function () {
     if (!allowed) return alert("يجب إدخال رقم الجوال أولاً");
     if (spinning) return;
@@ -190,7 +214,7 @@ lever.onclick = function () {
     });
 };
 
-/* —————————————— (5) السبين ——————————————— */
+/* —————————————— السبين ——————————————— */
 function startSpin() {
     let result = [];
     const symbols = ["🍔","🥗","🍖","🍟"];
@@ -225,7 +249,7 @@ function startSpin() {
     });
 }
 
-/* —————————————— (6) النتيجة ——————————————— */
+/* —————————————— النتيجة ——————————————— */
 function checkResult(arr,forced){
     if(forced){
         spinning=false;
@@ -244,7 +268,7 @@ function checkResult(arr,forced){
     showLose();
 }
 
-/* —————————————— (7) الفوز ——————————————— */
+/* —————————————— الفوز ——————————————— */
 function showWin(type){
     popup.style.display="flex";
     popupTitle.textContent="مبروووك! 🎉";
@@ -257,7 +281,7 @@ function showWin(type){
     waLink.style.display="block";
 }
 
-/* —————————————— (8) الخسارة ——————————————— */
+/* —————————————— الخسارة ——————————————— */
 function showLose(){
     popup.style.display="flex";
     popupTitle.textContent="حظاً أوفر 😈";
@@ -265,6 +289,7 @@ function showLose(){
     popupMsg.textContent="حظاً أوفر!";
     waLink.style.display="none";
 }
+
 </script>
 
 </body>
