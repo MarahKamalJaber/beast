@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   const API_URL =
-    "https://script.google.com/macros/s/AKfycbzUEptyIvAe2IgfS22wRMjXeNuMvjt5RKLns4dvxZKmXrLSD9saJMDdaGHCTFXTY8c/exec";
+    "https://script.google.com/macros/s/AKfycbwQx-HEtAH5LWqb2AaSjX3kGRqbzwRA1kjQr-oeN0mx4AWGeoAh7WDZCMhQePnTVlA/exec";
 
   // CORS headers عشان المتصفح ما يمنع الطلبات
   res.setHeader("Access-Control-Allow-Origin", "*");
