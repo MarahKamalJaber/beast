@@ -265,7 +265,7 @@
         deviceId = client.getFingerprint();
 
         // فحص الجهاز عند الدخول (لو الجهاز لعب من قبل ممنوع يدخل رقم أصلاً)
-       (function checkDevice() {
+     (function checkDevice() {
     const params = new URLSearchParams({
         action: "checkDeviceOnly",
         deviceId: deviceId
@@ -283,21 +283,25 @@
                 const machine = document.querySelector(".machine");
                 if (machine) machine.style.display = "none";
 
-                // منع الضغط على الذراع تماماً
+                // منع الذراع
                 if (lever) lever.style.pointerEvents = "none";
 
-                // منع التشغيل منطقياً
+                // تغيير نص التعليمات ليصبح "ممنوع اللعب"
+                const instructions = document.querySelector(".instructions");
+                if (instructions) {
+                    instructions.innerHTML = `
+                        <h2 style="font-size:26px;margin-bottom:10px;">🚫 ممنوع اللعب</h2>
+                        <p style="font-size:20px;">هذا الجهاز استخدم اللعبة مسبقًا ولا يمكنه اللعب مرة أخرى 😈</p>
+                    `;
+                }
+
+                // منع أي تشغيل
                 allowed = false;
                 spinning = true;
-
-                // رسالة واحدة فقط بدون أي خرابيش
-                alert("هذا الجهاز استخدم اللعبة مسبقاً ولا يمكنه اللعب مرة أخرى 😈");
             }
-        })
-        .catch(err => {
-            console.warn("Device check failed:", err);
         });
 })();
+
 
 
         // إدخال رقم الجوال
@@ -473,4 +477,5 @@
 
 </body>
 </html>
+
 
