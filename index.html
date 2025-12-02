@@ -184,7 +184,6 @@
 
 <body>
 
-    <!-- غيّري src إذا حابة من Vercel بدال GitHub -->
     <img src="https://raw.githubusercontent.com/MarahKamalJaber/beast/main/logo.png" class="logo">
 
     <div class="machine">
@@ -202,11 +201,10 @@
     </div>
 
     <div class="instructions">
-    😈 ادخل رقمك وجرب حظّك مع الوحش<br>
-    🎯 ممكن تربح برجر، سلطة، أجنحة<br><br>
-    👉 <b>اضغط على الذراع لتشغيل اللعبة</b>
-</div>
-
+        😈 ادخل رقمك وجرب حظّك مع الوحش<br>
+        🎯 ممكن تربح برجر، سلطة، أجنحة<br><br>
+        👉 <b>اضغط على الذراع لتشغيل اللعبة</b>
+    </div>
 
     <!-- POPUP -->
     <div id="popup">
@@ -243,16 +241,13 @@
     <script src="client.min.js"></script>
 
     <script>
-        // لو الـ HTML على نفس مشروع Vercel اللي فيه /api/proxy خليه هيك:
         const API_URL = "/api/proxy";
-        // لو في يوم استضفتي الـ HTML بمكان آخر: استخدمي رابط Vercel الكامل.
 
         let deviceId = null;
         let phone = "";
         let allowed = false;
         let spinning = false;
 
-        // عناصر الـ DOM
         const popup = document.getElementById("popup");
         const popupTitle = document.getElementById("popupTitle");
         const popupEmoji = document.getElementById("popupEmoji");
@@ -262,49 +257,13 @@
         const phoneInput = document.getElementById("phoneInput");
         const lever = document.getElementById("lever");
 
-        // بصمة الجهاز
-        const client = new ClientJS();
-        deviceId = client.getFingerprint();
-
-        // فحص الجهاز عند الدخول (لو الجهاز لعب من قبل ممنوع يدخل رقم أصلاً)
-     (function checkDevice() {
-    const params = new URLSearchParams({
-        action: "checkDeviceOnly",
-        deviceId: deviceId
-    });
-
-    fetch(`${API_URL}?${params.toString()}`)
-        .then(r => r.json())
-        .then(res => {
-            if (!res.allowed) {
-
-                // إخفاء شاشة إدخال الرقم
-                if (phonePopup) phonePopup.style.display = "none";
-
-                // إخفاء ماكينة السبين
-                const machine = document.querySelector(".machine");
-                if (machine) machine.style.display = "none";
-
-                // منع الذراع
-                if (lever) lever.style.pointerEvents = "none";
-
-                // تغيير نص التعليمات ليصبح "ممنوع اللعب"
-                const instructions = document.querySelector(".instructions");
-                if (instructions) {
-                    instructions.innerHTML = `
-                        <h2 style="font-size:26px;margin-bottom:10px;">🚫 ممنوع اللعب</h2>
-                        <p style="font-size:20px;">هذا الجهاز استخدم اللعبة مسبقًا ولا يمكنه اللعب مرة أخرى 😈</p>
-                    `;
-                }
-
-                // منع أي تشغيل
-                allowed = false;
-                spinning = true;
-            }
-        });
-})();
-
-
+        // بصمة الجهاز (تستخدم فقط للتسجيل في الشيت، مش للمنع)
+        try {
+            const client = new ClientJS();
+            deviceId = client.getFingerprint();
+        } catch(e) {
+            deviceId = "unknown";
+        }
 
         // إدخال رقم الجوال
         function submitPhone() {
@@ -318,7 +277,7 @@
             const params = new URLSearchParams({
                 action: "checkPhone",
                 phone: phone,
-                deviceId: deviceId
+                deviceId: deviceId || ""
             });
 
             fetch(`${API_URL}?${params.toString()}`)
@@ -329,27 +288,35 @@
                         return;
                     }
 
-                    if (!res.allowed) {
-                        if (res.reason === "phone_exists") {
-                            alert("هذا الرقم لعب مسبقاً ولا يمكنه اللعب مرة أخرى نهائياً 😈");
-                            return;
-                        }
-
-                        alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
+                    // الرقم موجود مسبقاً في الشيت
+                    if (!res.allowed && res.reason === "phone_exists") {
+                        document.body.innerHTML = `
+                            <div style="width:100%;height:100vh;display:flex;justify-content:center;align-items:center;
+                                background:#7a1824;color:white;font-size:24px;text-align:center;padding:20px;">
+                                ❌ هذا الرقم استخدم اللعبة مسبقاً<br>ولا يمكنه اللعب مرة أخرى 😈
+                            </div>
+                        `;
                         return;
                     }
 
-                    // تسجيل الرقم إذا كان مسموح
+                    // لو رجع ممنوع لأي سبب آخر (نادر)
+                    if (!res.allowed) {
+                        alert("لا يمكن اللعب بهذا الرقم.");
+                        return;
+                    }
+
+                    // تسجيل الرقم في الشيت
                     fetch(API_URL, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
                             action: "registerPhone",
                             phone: phone,
-                            deviceId: deviceId
+                            deviceId: deviceId || ""
                         })
                     }).catch(err => console.error("ERROR saving phone:", err));
 
+                    // إخفاء شاشة إدخال الرقم والسماح باللعب
                     phonePopup.style.display = "none";
                     allowed = true;
                 })
@@ -366,7 +333,7 @@
                 return;
             }
 
-            if (spinning) return;  // منع السحب أكثر من مرة
+            if (spinning) return;
             spinning = true;
 
             startSpin();
@@ -378,7 +345,7 @@
                 body: JSON.stringify({
                     action: "played",
                     phone: phone,
-                    deviceId: deviceId
+                    deviceId: deviceId || ""
                 })
             }).catch(err => console.error("ERROR played:", err));
         };
@@ -388,7 +355,6 @@
             let result = [];
             const symbols = ["🍔", "🥗", "🍖", "🍟"];
 
-            // احتمال الفوز
             const isWin = Math.random() < 0.10;
             let forcedType = null;
 
@@ -428,7 +394,7 @@
         function checkResult(arr, forced) {
             if (forced) {
                 spinning = false;
-                allowed = false; // يمنع اللعب مرة ثانية
+                allowed = false;
                 return showWin(forced);
             }
 
@@ -439,7 +405,7 @@
             }
 
             spinning = false;
-            allowed = false;   // حتى الخاسر لا يمكنه اللعب ثانية
+            allowed = false;
             showLose();
         }
 
@@ -479,6 +445,3 @@
 
 </body>
 </html>
-
-
-
