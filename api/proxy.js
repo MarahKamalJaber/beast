@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   
-  const API_URL = "https://script.google.com/macros/s/AKfycbw9XsdQwQ5JcVD6O3-Z7WmZRnA2W04dpj6V-XPBLkyuW6s2TiUeUA3N9rG3UT7Jn68/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbzUEptyIvAe2IgfS22wRMjXeNuMvjt5RKLns4dvxZKmXrLSD9saJMDdaGHCTFXTY8c/exec";
 
   try {
     if (req.method === "GET") {
