@@ -16,19 +16,19 @@
             overflow-x: hidden;
         }
 
-            body::before {
-                content: "BEAST BURGER BEAST BURGER BEAST BURGER BEAST BURGER ";
-                position: fixed;
-                top: -15%;
-                left: -25%;
-                width: 180%;
-                height: 180%;
-                font-size: 80px;
-                font-weight: 900;
-                color: rgba(0,0,0,0.12);
-                transform: rotate(-28deg);
-                z-index: -1;
-            }
+        body::before {
+            content: "BEAST BURGER BEAST BURGER BEAST BURGER BEAST BURGER ";
+            position: fixed;
+            top: -15%;
+            left: -25%;
+            width: 180%;
+            height: 180%;
+            font-size: 80px;
+            font-weight: 900;
+            color: rgba(0,0,0,0.12);
+            transform: rotate(-28deg);
+            z-index: -1;
+        }
 
         .logo {
             width: 135px;
@@ -89,9 +89,9 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.3);
         }
 
-            .wa-btn:hover {
-                background: #1eb158;
-            }
+        .wa-btn:hover {
+            background: #1eb158;
+        }
 
         .lever-box {
             position: absolute;
@@ -106,9 +106,9 @@
             transition: .25s ease;
         }
 
-            .lever.active {
-                transform: rotate(25deg) translateY(10px);
-            }
+        .lever.active {
+            transform: rotate(25deg) translateY(10px);
+        }
 
         .lever-stick {
             width: 16px;
@@ -184,7 +184,6 @@
 
 <body>
 
-    <!-- غيّري src إذا حابة من Vercel بدال GitHub -->
     <img src="https://raw.githubusercontent.com/MarahKamalJaber/beast/main/logo.png" class="logo">
 
     <div class="machine">
@@ -207,7 +206,6 @@
         👉 <b>اضغط على الذراع لتشغيل اللعبة</b>
     </div>
 
-
     <!-- POPUP -->
     <div id="popup">
         <div class="popup-box">
@@ -219,7 +217,7 @@
                target="_blank"
                style="display:none;margin-top:15px; padding:12px; background:#25D366;
                   color:white; border-radius:10px; font-size:18px; text-decoration:none;
-                  font-weight:bold; display:block;">
+                  font-weight:bold;">
                 تواصل عبر واتساب 📩
             </a>
         </div>
@@ -243,16 +241,13 @@
     <script src="client.min.js"></script>
 
     <script>
-        // لو الـ HTML على نفس مشروع Vercel اللي فيه /api/proxy خليه هيك:
         const API_URL = "/api/proxy";
-        // لو في يوم استضفتي الـ HTML بمكان آخر: استخدمي رابط Vercel الكامل.
 
         let deviceId = null;
         let phone = "";
         let allowed = false;
         let spinning = false;
 
-        // عناصر الـ DOM
         const popup = document.getElementById("popup");
         const popupTitle = document.getElementById("popupTitle");
         const popupEmoji = document.getElementById("popupEmoji");
@@ -262,49 +257,55 @@
         const phoneInput = document.getElementById("phoneInput");
         const lever = document.getElementById("lever");
 
-        // بصمة الجهاز
-        const client = new ClientJS();
-        deviceId = client.getFingerprint();
+        // توليد بصمة للجهاز
+        (function initDeviceId() {
+            try {
+                const client = new ClientJS();
+                deviceId = "D_" + client.getFingerprint();
+            } catch (e) {
+                // fallback بسيط لو ClientJS فشل
+                const raw = navigator.userAgent + screen.width + screen.height + Date.now();
+                let hash = 0;
+                for (let i = 0; i < raw.length; i++) {
+                    hash = (hash << 5) - hash + raw.charCodeAt(i);
+                    hash |= 0;
+                }
+                deviceId = "FB_" + Math.abs(hash);
+            }
+        })();
 
-        // فحص الجهاز عند الدخول (لو الجهاز لعب من قبل ممنوع يدخل رقم أصلاً)
+        // فحص الجهاز عند الدخول
         (function checkDevice() {
+            if (!deviceId) return;
+
             const params = new URLSearchParams({
                 action: "checkDeviceOnly",
                 deviceId: deviceId
             });
 
-            fetch(${API_URL}?${params.toString()})
+            fetch(`${API_URL}?${params.toString()}`)
                 .then(r => r.json())
                 .then(res => {
                     if (!res.allowed) {
-
-                        // إخفاء شاشة إدخال الرقم
                         if (phonePopup) phonePopup.style.display = "none";
-
-                        // إخفاء ماكينة السبين
                         const machine = document.querySelector(".machine");
                         if (machine) machine.style.display = "none";
-
-                        // منع الذراع
                         if (lever) lever.style.pointerEvents = "none";
 
-                        // تغيير نص التعليمات ليصبح "ممنوع اللعب"
                         const instructions = document.querySelector(".instructions");
                         if (instructions) {
                             instructions.innerHTML = `
-                            <h2 style="font-size:26px;margin-bottom:10px;">🚫 ممنوع اللعب</h2>
-                            <p style="font-size:20px;">هذا الجهاز استخدم اللعبة مسبقًا ولا يمكنه اللعب مرة أخرى 😈</p>
-                        `;
+                                <h2 style="font-size:26px;margin-bottom:10px;">🚫 ممنوع اللعب</h2>
+                                <p style="font-size:20px;">هذا الجهاز استخدم اللعبة مسبقًا ولا يمكنه اللعب مرة أخرى 😈</p>
+                            `;
                         }
 
-                        // منع أي تشغيل
                         allowed = false;
                         spinning = true;
                     }
-                });
+                })
+                .catch(err => console.error("checkDevice error:", err));
         })();
-
-
 
         // إدخال رقم الجوال
         function submitPhone() {
@@ -321,7 +322,7 @@
                 deviceId: deviceId
             });
 
-            fetch(${API_URL}?${params.toString()})
+            fetch(`${API_URL}?${params.toString()}`)
                 .then(r => r.json())
                 .then(res => {
                     if (!res || res.error) {
@@ -339,7 +340,7 @@
                         return;
                     }
 
-                    // تسجيل الرقم إذا كان مسموح
+                    // تسجيل الرقم لأول مرة
                     fetch(API_URL, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -366,12 +367,11 @@
                 return;
             }
 
-            if (spinning) return;  // منع السحب أكثر من مرة
+            if (spinning) return;
             spinning = true;
 
             startSpin();
 
-            // تسجيل أنه لعب
             fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -388,15 +388,14 @@
             let result = [];
             const symbols = ["🍔", "🥗", "🍖", "🍟"];
 
-            // احتمال الفوز
             const isWin = Math.random() < 0.10;
             let forcedType = null;
 
             if (isWin) {
-                let r = Math.random();
-                if (r < 0.01) forcedType = "burger";     // 1%
-                else if (r < 0.46) forcedType = "salad"; // 45%
-                else forcedType = "wings";               // 54%
+                const r = Math.random();
+                if (r < 0.01) forcedType = "burger";
+                else if (r < 0.46) forcedType = "salad";
+                else forcedType = "wings";
             }
 
             ["r1", "r2", "r3"].forEach((id, idx) => {
@@ -410,7 +409,9 @@
                     clearInterval(interval);
 
                     let final = forcedType
-                        ? (forcedType === "burger" ? "🍔" : forcedType === "salad" ? "🥗" : "🍖")
+                        ? (forcedType === "burger" ? "🍔"
+                            : forcedType === "salad" ? "🥗"
+                            : "🍖")
                         : symbols[Math.floor(Math.random() * symbols.length)];
 
                     reel.textContent = final;
@@ -419,7 +420,6 @@
                     if (idx === 2) {
                         setTimeout(() => checkResult(result, forcedType), 500);
                     }
-
                 }, 4200 + idx * 400);
             });
         }
@@ -428,7 +428,7 @@
         function checkResult(arr, forced) {
             if (forced) {
                 spinning = false;
-                allowed = false; // يمنع اللعب مرة ثانية
+                allowed = false;
                 return showWin(forced);
             }
 
@@ -439,7 +439,7 @@
             }
 
             spinning = false;
-            allowed = false;   // حتى الخاسر لا يمكنه اللعب ثانية
+            allowed = false;
             showLose();
         }
 
@@ -463,11 +463,10 @@
                 msg = "مرحبا، ربحت وجبة أجنحة من لعبة Beast Burger 🍖🔥";
             }
 
-            waLink.href = https://wa.me/972599443332?text=${encodeURIComponent(msg)};
+            waLink.href = `https://wa.me/972599443332?text=${encodeURIComponent(msg)}`;
             waLink.style.display = "block";
         }
 
-        // رسالة الخسارة
         function showLose() {
             popup.style.display = "flex";
             popupTitle.textContent = "حظاً أوفر 😈";
