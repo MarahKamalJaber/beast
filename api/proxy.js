@@ -1,8 +1,8 @@
 export default async function handler(req, res) {
   const API_URL =
-    "https://script.google.com/macros/s/AKfycbxf7ZT-HvbSLS5yYmOOmhca4Bdnu0GmV7KwnE5-ueX92mDSfuWlaYHJdzWYokwaWwU/exec";
+    "https://script.google.com/macros/s/AKfycbwj0Orp38yMpzfaIuVc4-DGdT3leh0IM8por07EJCmMCAIJVYqWBVrPy1XuIJUVp9g/exec";
 
-  // CORS — مهم لفتح اللعبة من إنستا / مسنجر / تطبيقات خارجية
+  // CORS — ضروري ليشتغل على انستا / مسنجر / اوبرا / ايدج
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
@@ -14,10 +14,12 @@ export default async function handler(req, res) {
   try {
     /* --------------------------------------------------------
      * GET REQUEST
-     * نستخدمه لفحص الجهاز + الرقم + ip
-     * ------------------------------------------------------ */
+     * -------------------------------------------------------- */
     if (req.method === "GET") {
-      const url = API_URL + "?" + new URLSearchParams(req.query).toString();
+      // استخراج الـ query الأصلي بالكامل بدون تعديل
+      const originalQuery = req.url.split("?")[1] || "";
+      const url = API_URL + "?" + originalQuery;
+
       const response = await fetch(url);
       const text = await response.text();
 
@@ -33,8 +35,7 @@ export default async function handler(req, res) {
 
     /* --------------------------------------------------------
      * POST REQUEST
-     * (registerPhone / played)
-     * ------------------------------------------------------ */
+     * -------------------------------------------------------- */
     if (req.method === "POST") {
       const response = await fetch(API_URL, {
         method: "POST",
