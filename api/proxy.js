@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   const API_URL =
-    "https://script.google.com/macros/s/AKfycbxDhimQfTlhx9q5H2cVu2nHkapc5Fjl2aevMixLzaHBKQQ5hY_JrIJbI24NgVfJPr4/exec";
+    "https://script.google.com/macros/s/AKfycbxf7ZT-HvbSLS5yYmOOmhca4Bdnu0GmV7KwnE5-ueX92mDSfuWlaYHJdzWYokwaWwU/exec";
 
   // CORS — مهم لفتح اللعبة من إنستا / مسنجر / تطبيقات خارجية
   res.setHeader("Access-Control-Allow-Origin", "*");
