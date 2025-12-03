@@ -48,7 +48,7 @@
         <div id="r3" class="reel">🍖</div>
     </div>
 
-    <!-- 🔥 الذراع موجود هون 🔥 -->
+    <!-- 🔥 الذراع موجود 🔥 -->
     <div class="lever-box">
         <div id="lever" class="lever">
             <div class="lever-stick"></div>
@@ -97,24 +97,43 @@
 
 <script>
 
-/* —————————————— (1) بصمة ثابتة + LocalStorage ——————————————— */
-function stableDeviceId() {
-    const c = new ClientJS();
-    const raw = c.getFingerprint() + navigator.userAgent + screen.width + screen.height;
+/* —————————————— (1) جهاز ثابت = Cookie bbid ——————————————— */
 
-    let h = 0;
-    for (let i = 0; i < raw.length; i++) {
-        h = (h << 5) - h + raw.charCodeAt(i);
-        h |= 0;
+function getOrCreateDeviceId() {
+
+    const name = "bbid=";
+    const decoded = decodeURIComponent(document.cookie);
+    const parts = decoded.split(';');
+
+    // موجود مسبقاً؟
+    for (let c of parts) {
+        c = c.trim();
+        if (c.indexOf(name) === 0) {
+            return c.substring(name.length);
+        }
     }
-    return "D" + Math.abs(h);
+
+    // توليد بصمة جديدة
+    const client = new ClientJS();
+    const raw = client.getFingerprint() + navigator.userAgent + screen.width + screen.height;
+
+    let hash = 0;
+    for (let i = 0; i < raw.length; i++) {
+        hash = (hash << 5) - hash + raw.charCodeAt(i);
+        hash |= 0;
+    }
+
+    const newId = "D" + Math.abs(hash);
+
+    // تخزينها في Cookie سنة كاملة
+    document.cookie = `bbid=${newId}; max-age=31536000; path=/; SameSite=None; Secure`;
+
+    return newId;
 }
 
-let deviceId = localStorage.getItem("device_key");
-if (!deviceId) {
-    deviceId = stableDeviceId();
-    localStorage.setItem("device_key", deviceId);
-}
+let deviceId = getOrCreateDeviceId();
+
+/* —————————————— API ——————————————— */
 
 const API_URL = "/api/proxy";
 
@@ -132,7 +151,9 @@ const phoneInput = document.getElementById("phoneInput");
 const lever = document.getElementById("lever");
 
 /* —————————————— (2) فحص الجهاز أول ما يدخل ——————————————— */
+
 (function checkDevice() {
+
     const params = new URLSearchParams({
         action: "checkDeviceOnly",
         deviceId: deviceId
@@ -141,6 +162,7 @@ const lever = document.getElementById("lever");
     fetch(`${API_URL}?${params}`)
         .then(r => r.json())
         .then(res => {
+
             if (!res.allowed) {
 
                 phonePopup.style.display = "none";
@@ -155,10 +177,13 @@ const lever = document.getElementById("lever");
                 allowed = false;
                 spinning = true;
             }
+
         });
+
 })();
 
 /* —————————————— (3) إدخال الرقم ——————————————— */
+
 function submitPhone() {
     phone = phoneInput.value.trim();
 
@@ -175,6 +200,7 @@ function submitPhone() {
         .then(res => {
 
             if (!res.allowed) {
+
                 if (res.reason === "device_exists")
                     return alert("هذا الجهاز استخدم اللعبة مسبقاً 😈");
 
@@ -184,12 +210,10 @@ function submitPhone() {
                 return alert("غير مسموح باللعب.");
             }
 
-            // سجل الرقم + الجهاز لأول مرة
             fetch(API_URL, {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    action: "registerPhone",
+                headers: {"Content-Type":
+"title":"registerPhone",
                     phone: phone,
                     deviceId: deviceId
                 })
@@ -200,27 +224,32 @@ function submitPhone() {
         });
 }
 
-/* —————————————— (4) تشغيل الذراع ——————————————— */
+/* —————————————— (4) المقبض ——————————————— */
+
 lever.onclick = function () {
+
     if (!allowed) return alert("يجب إدخال رقم الجوال أولاً");
     if (spinning) return;
-    spinning = true;
 
+    spinning = true;
     startSpin();
 
     fetch(API_URL, {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-            action:"played",
-            phone:phone,
-            deviceId:deviceId
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            action: "played",
+            phone: phone,
+            deviceId: deviceId
         })
     });
+
 };
 
 /* —————————————— (5) السبين ——————————————— */
+
 function startSpin() {
+
     let result = [];
     const symbols = ["🍔","🥗","🍖","🍟"];
 
@@ -228,20 +257,20 @@ function startSpin() {
     let forcedType = null;
 
     if (isWin) {
-        let r = Math.random();
+        const r = Math.random();
         if (r < 0.01) forcedType = "burger";
         else if (r < 0.46) forcedType = "salad";
         else forcedType = "wings";
     }
 
     ["r1","r2","r3"].forEach((id,idx)=>{
-        let reel=document.getElementById(id);
+        let reel = document.getElementById(id);
 
-        let interval=setInterval(()=> {
-            reel.textContent=symbols[Math.floor(Math.random()*symbols.length)];
+        let interval = setInterval(()=>{
+            reel.textContent = symbols[Math.floor(Math.random()*symbols.length)];
         },80);
 
-        setTimeout(()=> {
+        setTimeout(()=>{
             clearInterval(interval);
 
             let final = forcedType
@@ -251,22 +280,24 @@ function startSpin() {
             reel.textContent = final;
             result[idx] = final;
 
-            if(idx === 2)
-                setTimeout(()=>checkResult(result,forcedType),600);
+            if(idx === 2) setTimeout(()=>checkResult(result,forcedType),600);
 
         },4200 + idx * 400);
     });
+
 }
 
-/* —————————————— (6) فحص النتيجة ——————————————— */
+/* —————————————— (6) النتيجة ——————————————— */
+
 function checkResult(arr,forced){
+
     if(forced){
         spinning=false;
         allowed=false;
         return showWin(forced);
     }
 
-    if(arr[0] === arr[1] && arr[1] === arr[2]){
+    if(arr[0]===arr[1] && arr[1]===arr[2]){
         if(arr[0]==="🍔") return showWin("burger");
         if(arr[0]==="🥗") return showWin("salad");
         if(arr[0]==="🍖") return showWin("wings");
@@ -278,19 +309,31 @@ function checkResult(arr,forced){
 }
 
 /* —————————————— (7) الفوز ——————————————— */
+
 function showWin(type){
+
     popup.style.display="flex";
     popupTitle.textContent="مبروووك! 🎉";
 
-    if(type==="burger"){ popupEmoji.textContent="🍔"; popupMsg.textContent="ربحت وجبة برغر!"; }
-    else if(type==="salad"){ popupEmoji.textContent="🥗"; popupMsg.textContent="ربحت سلطة!"; }
-    else { popupEmoji.textContent="🍖"; popupMsg.textContent="ربحت أجنحة!"; }
+    if(type==="burger"){
+        popupEmoji.textContent="🍔";
+        popupMsg.textContent="ربحت وجبة برغر!";
+    }
+    else if(type==="salad"){
+        popupEmoji.textContent="🥗";
+        popupMsg.textContent="ربحت سلطة!";
+    }
+    else {
+        popupEmoji.textContent="🍖";
+        popupMsg.textContent="ربحت أجنحة!";
+    }
 
     waLink.href=`https://wa.me/972599443332?text=${encodeURIComponent("ربحت من لعبة Beast Burger 🎉")}`;
     waLink.style.display="block";
 }
 
 /* —————————————— (8) الخسارة ——————————————— */
+
 function showLose(){
     popup.style.display="flex";
     popupTitle.textContent="حظاً أوفر 😈";
