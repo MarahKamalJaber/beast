@@ -6,397 +6,476 @@
     <title>Beast Burger Spin</title>
 
     <style>
-        body { margin: 0; padding: 0; font-family: 'Cairo', sans-serif; background: #7a1824; color: #fff; text-align: center; overflow-x: hidden; }
-        body::before { content: "BEAST BURGER BEAST BURGER BEAST BURGER BEAST BURGER "; position: fixed; top: -15%; left: -25%; width: 180%; height: 180%; font-size: 80px; font-weight: 900; color: rgba(0,0,0,0.12); transform: rotate(-28deg); z-index: -1; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            background: #7a1824;
+            color: #fff;
+            text-align: center;
+            overflow-x: hidden;
+        }
 
-        .logo { width: 135px; margin: 25px auto 10px; display: block; }
+            body::before {
+                content: "BEAST BURGER BEAST BURGER BEAST BURGER BEAST BURGER ";
+                position: fixed;
+                top: -15%;
+                left: -25%;
+                width: 180%;
+                height: 180%;
+                font-size: 80px;
+                font-weight: 900;
+                color: rgba(0,0,0,0.12);
+                transform: rotate(-28deg);
+                z-index: -1;
+            }
 
-        .machine { width: 92%; max-width: 480px; margin: 35px auto 0; background: linear-gradient(180deg,#ff8a20,#ff5a00); padding: 28px 20px 40px; border-radius: 38px;
-                   box-shadow: 0 0 50px rgba(0,0,0,0.45); position: relative; }
+        .logo {
+            width: 135px;
+            margin: 25px auto 10px;
+            display: block;
+        }
 
-        .screen { background: #0a0607; border-radius: 28px; padding: 30px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .machine {
+            width: 92%;
+            max-width: 480px;
+            margin: 35px auto 0;
+            background: linear-gradient(180deg,#ff8a20,#ff5a00);
+            padding: 28px 20px 40px;
+            border-radius: 38px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.45);
+            position: relative;
+        }
 
-        .reel { width: 90px; height: 90px; background: #1a0f13; border-radius: 20px; font-size: 52px; display: flex; justify-content: center; align-items: center; }
+        .screen {
+            background: #0a0607;
+            border-radius: 28px;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        @media(max-width:600px){ .reel { width: 72px; height: 72px; font-size: 44px; } }
+        .reel {
+            width: 90px;
+            height: 90px;
+            background: #1a0f13;
+            border-radius: 20px;
+            font-size: 52px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-        .lever-box { position: absolute; left: -5px; bottom: -40px; transform: rotate(12deg); }
-        .lever { cursor: pointer; width: 90px; transition: .25s ease; }
-        .lever-stick { width: 16px; height: 90px; background: #000; border-radius: 10px; margin: 0 auto; }
-        .lever-ball { width: 55px; height: 55px; background: #ffb58d; border-radius: 50%; box-shadow: 0 8px 16px rgba(0,0,0,0.55); margin-top: -12px; }
+        @media(max-width:600px) {
+            .reel {
+                width: 72px;
+                height: 72px;
+                font-size: 44px;
+            }
+        }
 
-        .instructions { margin-top: 50px; font-size: 18px; line-height: 1.7; padding: 0 10px; }
+        .wa-btn {
+            display: block;
+            margin-top: 15px;
+            background: #25D366;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
 
-        #popup,#phonePopup { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85);
-                             display:none; justify-content:center; align-items:center; z-index:9999; }
+            .wa-btn:hover {
+                background: #1eb158;
+            }
 
-        .popup-box,.phone-box { background:#0f0a0a; border:3px solid #ff6a00; padding:25px; border-radius:18px;
-                                 width:85%; max-width:350px; text-align:center; }
+        .lever-box {
+            position: absolute;
+            left: -5px;
+            bottom: -40px;
+            transform: rotate(12deg);
+        }
 
-        .phone-box { background:white; color:black; border:none; }
+        .lever {
+            cursor: pointer;
+            width: 90px;
+            transition: .25s ease;
+        }
+
+            .lever.active {
+                transform: rotate(25deg) translateY(10px);
+            }
+
+        .lever-stick {
+            width: 16px;
+            height: 90px;
+            background: #000;
+            border-radius: 10px;
+            margin: 0 auto;
+        }
+
+        .lever-ball {
+            width: 55px;
+            height: 55px;
+            background: #ffb58d;
+            border-radius: 50%;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.55);
+            margin-top: -12px;
+        }
+
+        .instructions {
+            margin-top: 50px;
+            font-size: 18px;
+            line-height: 1.7;
+            padding: 0 10px;
+        }
+
+        #popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .popup-box {
+            background: #0f0a0a;
+            border: 3px solid #ff6a00;
+            padding: 25px;
+            border-radius: 18px;
+            width: 85%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        #phonePopup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .phone-box {
+            background: white;
+            color: black;
+            padding: 25px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 320px;
+            text-align: center;
+        }
     </style>
 </head>
+
 <body>
 
-<img src="https://raw.githubusercontent.com/MarahKamalJaber/beast/main/logo.png" class="logo">
+    <!-- غيّري src إذا حابة من Vercel بدال GitHub -->
+    <img src="https://raw.githubusercontent.com/MarahKamalJaber/beast/main/logo.png" class="logo">
 
-<div class="machine">
-    <div class="screen">
-        <div id="r1" class="reel">🍔</div>
-        <div id="r2" class="reel">🥗</div>
-        <div id="r3" class="reel">🍖</div>
-    </div>
-
-    <div class="lever-box">
-        <div id="lever" class="lever">
-            <div class="lever-stick"></div>
-            <div class="lever-ball"></div>
+    <div class="machine">
+        <div class="screen">
+            <div id="r1" class="reel">🍔</div>
+            <div id="r2" class="reel">🥗</div>
+            <div id="r3" class="reel">🍖</div>
+        </div>
+        <div class="lever-box">
+            <div id="lever" class="lever">
+                <div class="lever-stick"></div>
+                <div class="lever-ball"></div>
+            </div>
         </div>
     </div>
 
-</div>
-
-<div class="instructions">
-😈 ادخل رقمك وجرب حظّك مع الوحش<br>
-🎯 ممكن تربح برجر، سلطة، أجنحة<br><br>
-👉 <b>اضغط على الذراع لتشغيل اللعبة</b>
-</div>
-
-<!-- نتيجة -->
-<div id="popup">
-    <div class="popup-box">
-        <h2 id="popupTitle">مبروووك!</h2>
-        <div id="popupEmoji" style="font-size:40px;">🔥🍔🔥</div>
-        <p id="popupMsg"></p>
-        <a id="waLink" href="#" target="_blank"
-           style="display:none;margin-top:15px;padding:12px;background:#25D366;color:white;
-           border-radius:10px;font-size:18px;text-decoration:none;font-weight:bold;">
-            تواصل عبر واتساب 📩
-        </a>
+    <div class="instructions">
+        😈 ادخل رقمك وجرب حظّك مع الوحش<br>
+        🎯 ممكن تربح برجر، سلطة، أجنحة<br><br>
+        👉 <b>اضغط على الذراع لتشغيل اللعبة</b>
     </div>
-</div>
 
-<!-- إدخال رقم -->
-<div id="phonePopup" style="display:flex;">
-    <div class="phone-box">
-        <h2>أدخل رقم جوالك</h2>
-        <p>محاولة واحدة فقط</p>
-        <input id="phoneInput" type="tel" placeholder="059XXXXXXX"
-               style="width:95%;padding:12px;border-radius:10px;border:2px solid #ff5a00;font-size:18px;">
-        <button onclick="submitPhone()"
-                style="margin-top:15px;width:100%;padding:12px;font-size:18px;background:#ff5a00;color:white;border:none;border-radius:10px;">
-            متابعة
-        </button>
+
+    <!-- POPUP -->
+    <div id="popup">
+        <div class="popup-box">
+            <h2 id="popupTitle">مبروووك!</h2>
+            <div class="win-emoji" id="popupEmoji">🔥🍔🔥</div>
+            <p id="popupMsg"></p>
+            <a id="waLink"
+               href="#"
+               target="_blank"
+               style="display:none;margin-top:15px; padding:12px; background:#25D366;
+                  color:white; border-radius:10px; font-size:18px; text-decoration:none;
+                  font-weight:bold; display:block;">
+                تواصل عبر واتساب 📩
+            </a>
+        </div>
     </div>
-</div>
 
-<script>
-/* —————————————————— 🔥 DEVICE ID (أقوى نظام حماية) —————————————————— */
+    <!-- PHONE SCREEN -->
+    <div id="phonePopup">
+        <div class="phone-box">
+            <h2>أدخل رقم جوالك</h2>
+            <p>محاولة واحدة فقط</p>
+            <input id="phoneInput" type="tel" placeholder="059XXXXXXX"
+                   style="width:95%;padding:12px;border-radius:10px;border:2px solid #ff5a00;font-size:18px;">
+            <button onclick="submitPhone()"
+                    style="margin-top:15px;width:100%;padding:12px;font-size:18px;background:#ff5a00;color:white;border:none;border-radius:10px;">
+                متابعة
+            </button>
+        </div>
+    </div>
 
-async function generateStrongDeviceId() {
+    <!-- ClientJS fingerprint -->
+    <script src="client.min.js"></script>
 
-    function getCanvasFP() {
-        try {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            ctx.textBaseline = "top";
-            ctx.font = "16px Arial";
-            ctx.fillText("BEAST-BURGER-UNIQUE", 2, 2);
-            return canvas.toDataURL();
-        } catch { return "canvas_unsupported"; }
-    }
+    <script>
+        // لو الـ HTML على نفس مشروع Vercel اللي فيه /api/proxy خليه هيك:
+        const API_URL = "/api/proxy";
+        // لو في يوم استضفتي الـ HTML بمكان آخر: استخدمي رابط Vercel الكامل.
 
-    async function getAudioFP() {
-        try {
-            const audioCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 44100, 44100);
-            const osc = audioCtx.createOscillator();
-            osc.type = "triangle";
-            osc.frequency.value = 10000;
+        let deviceId = null;
+        let phone = "";
+        let allowed = false;
+        let spinning = false;
 
-            const comp = audioCtx.createDynamicsCompressor();
-            osc.connect(comp);
-            comp.connect(audioCtx.destination);
-            osc.start(0);
+        // عناصر الـ DOM
+        const popup = document.getElementById("popup");
+        const popupTitle = document.getElementById("popupTitle");
+        const popupEmoji = document.getElementById("popupEmoji");
+        const popupMsg = document.getElementById("popupMsg");
+        const waLink = document.getElementById("waLink");
+        const phonePopup = document.getElementById("phonePopup");
+        const phoneInput = document.getElementById("phoneInput");
+        const lever = document.getElementById("lever");
 
-            const buffer = await audioCtx.startRendering();
-            let fp = buffer.getChannelData(0).slice(4500,5000).reduce((a,b)=>a+Math.abs(b),0);
-            return fp.toString();
-        } catch { return "audio_unsupported"; }
-    }
+        // بصمة الجهاز
+        const client = new ClientJS();
+        deviceId = client.getFingerprint();
 
-    function getWebGLFP() {
-        try {
-            const canvas = document.createElement("canvas");
-            const gl = canvas.getContext("webgl");
-            if (!gl) return "webgl_unsupported";
+        // فحص الجهاز عند الدخول (لو الجهاز لعب من قبل ممنوع يدخل رقم أصلاً)
+        (function checkDevice() {
+            const params = new URLSearchParams({
+                action: "checkDeviceOnly",
+                deviceId: deviceId
+            });
 
-            const dbg = gl.getExtension("WEBGL_debug_renderer_info");
-            const vendor = gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL);
-            const renderer = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL);
-            return vendor + "_" + renderer;
-        } catch { return "webgl_unsupported"; }
-    }
+            fetch(${API_URL}?${params.toString()})
+                .then(r => r.json())
+                .then(res => {
+                    if (!res.allowed) {
 
-    const data = {
-        ua: navigator.userAgent,
-        lang: navigator.language,
-        tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        cores: navigator.hardwareConcurrency,
-        pixelRatio: window.devicePixelRatio,
-        screen: screen.width + "x" + screen.height,
-        canvas: getCanvasFP(),
-        audio: await getAudioFP(),
-        webgl: getWebGLFP(),
-        rnd: Math.random().toString(36).substring(2)
-    };
+                        // إخفاء شاشة إدخال الرقم
+                        if (phonePopup) phonePopup.style.display = "none";
 
-    const raw = JSON.stringify(data);
-    let hash = 0;
-    for (let i = 0; i < raw.length; i++) {
-        hash = (hash << 5) - hash + raw.charCodeAt(i);
-        hash |= 0;
-    }
-    return "D_" + Math.abs(hash).toString(16);
-}
+                        // إخفاء ماكينة السبين
+                        const machine = document.querySelector(".machine");
+                        if (machine) machine.style.display = "none";
+
+                        // منع الذراع
+                        if (lever) lever.style.pointerEvents = "none";
+
+                        // تغيير نص التعليمات ليصبح "ممنوع اللعب"
+                        const instructions = document.querySelector(".instructions");
+                        if (instructions) {
+                            instructions.innerHTML = `
+                            <h2 style="font-size:26px;margin-bottom:10px;">🚫 ممنوع اللعب</h2>
+                            <p style="font-size:20px;">هذا الجهاز استخدم اللعبة مسبقًا ولا يمكنه اللعب مرة أخرى 😈</p>
+                        `;
+                        }
+
+                        // منع أي تشغيل
+                        allowed = false;
+                        spinning = true;
+                    }
+                });
+        })();
 
 
-async function getFinalDeviceId() {
-    return new Promise((resolve) => {
-        const req = indexedDB.open("BBID_SECURE_DB", 1);
-        req.onupgradeneeded = e => e.target.result.createObjectStore("store");
 
-        req.onsuccess = async () => {
-            const db = req.result;
-            const tx = db.transaction("store", "readwrite");
-            const store = tx.objectStore("store");
+        // إدخال رقم الجوال
+        function submitPhone() {
+            phone = phoneInput.value.trim();
 
-            const getId = store.get("bbid");
-            getId.onsuccess = async () => {
-                if (getId.result) {
-                    resolve(getId.result);
-                } else {
-                    const newId = await generateStrongDeviceId();
-                    store.put(newId, "bbid");
-                    localStorage.setItem("bbid", newId);
-                    document.cookie = `bbid=${newId}; max-age=31536000; path=/`;
-                    resolve(newId);
-                }
-            };
+            if (phone.length < 7) {
+                alert("رقم غير صالح");
+                return;
+            }
+
+            const params = new URLSearchParams({
+                action: "checkPhone",
+                phone: phone,
+                deviceId: deviceId
+            });
+
+            fetch(${API_URL}?${params.toString()})
+                .then(r => r.json())
+                .then(res => {
+                    if (!res || res.error) {
+                        alert("في مشكلة في السيرفر، حاول مرة أخرى.");
+                        return;
+                    }
+
+                    if (!res.allowed) {
+                        if (res.reason === "phone_exists") {
+                            alert("هذا الرقم لعب مسبقاً ولا يمكنه اللعب مرة أخرى نهائياً 😈");
+                            return;
+                        }
+
+                        alert("هذا الجهاز أو الرقم استخدم اللعبة مسبقاً 😈");
+                        return;
+                    }
+
+                    // تسجيل الرقم إذا كان مسموح
+                    fetch(API_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            action: "registerPhone",
+                            phone: phone,
+                            deviceId: deviceId
+                        })
+                    }).catch(err => console.error("ERROR saving phone:", err));
+
+                    phonePopup.style.display = "none";
+                    allowed = true;
+                })
+                .catch(err => {
+                    console.error("ERROR checkPhone:", err);
+                    alert("في مشكلة في الاتصال، حاول مرة أخرى بعد قليل.");
+                });
+        }
+
+        // عند سحب المقبض
+        lever.onclick = function () {
+            if (!allowed) {
+                alert("يجب إدخال رقم الجوال أولاً");
+                return;
+            }
+
+            if (spinning) return;  // منع السحب أكثر من مرة
+            spinning = true;
+
+            startSpin();
+
+            // تسجيل أنه لعب
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "played",
+                    phone: phone,
+                    deviceId: deviceId
+                })
+            }).catch(err => console.error("ERROR played:", err));
         };
-    });
-}
 
+        // تشغيل السبين
+        function startSpin() {
+            let result = [];
+            const symbols = ["🍔", "🥗", "🍖", "🍟"];
 
-/* —————————————————— المتغيّرات —————————————————— */
+            // احتمال الفوز
+            const isWin = Math.random() < 0.10;
+            let forcedType = null;
 
-let deviceId = null;
-let phone = "";
-let allowed = false;
-let spinning = false;
+            if (isWin) {
+                let r = Math.random();
+                if (r < 0.01) forcedType = "burger";     // 1%
+                else if (r < 0.46) forcedType = "salad"; // 45%
+                else forcedType = "wings";               // 54%
+            }
 
-const API_URL = "/api/proxy";
+            ["r1", "r2", "r3"].forEach((id, idx) => {
+                let reel = document.getElementById(id);
 
-const phonePopup = document.getElementById("phonePopup");
-const phoneInput = document.getElementById("phoneInput");
-const popup = document.getElementById("popup");
-const popupTitle = document.getElementById("popupTitle");
-const popupEmoji = document.getElementById("popupEmoji");
-const popupMsg = document.getElementById("popupMsg");
-const waLink = document.getElementById("waLink");
-const lever = document.getElementById("lever");
+                let interval = setInterval(() => {
+                    reel.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                }, 80);
 
+                setTimeout(() => {
+                    clearInterval(interval);
 
-/* —————————————————— 1) استخراج البصمة وفحص الجهاز —————————————————— */
+                    let final = forcedType
+                        ? (forcedType === "burger" ? "🍔" : forcedType === "salad" ? "🥗" : "🍖")
+                        : symbols[Math.floor(Math.random() * symbols.length)];
 
-(async ()=>{
-    deviceId = await getFinalDeviceId();
-    checkDevice();
-})();
+                    reel.textContent = final;
+                    result[idx] = final;
 
+                    if (idx === 2) {
+                        setTimeout(() => checkResult(result, forcedType), 500);
+                    }
 
-/* —————————————————— 2) فحص الجهاز —————————————————— */
+                }, 4200 + idx * 400);
+            });
+        }
 
-async function checkDevice() {
+        // التحقق من النتيجة
+        function checkResult(arr, forced) {
+            if (forced) {
+                spinning = false;
+                allowed = false; // يمنع اللعب مرة ثانية
+                return showWin(forced);
+            }
 
-    const params = new URLSearchParams({
-        action: "checkDeviceOnly",
-        deviceId: deviceId
-    });
+            if (arr[0] === arr[1] && arr[1] === arr[2]) {
+                if (arr[0] === "🍔") { spinning = false; allowed = false; return showWin("burger"); }
+                if (arr[0] === "🥗") { spinning = false; allowed = false; return showWin("salad"); }
+                if (arr[0] === "🍖") { spinning = false; allowed = false; return showWin("wings"); }
+            }
 
-    const res = await fetch(`${API_URL}?${params}`).then(r=>r.json());
+            spinning = false;
+            allowed = false;   // حتى الخاسر لا يمكنه اللعب ثانية
+            showLose();
+        }
 
-    if (!res.allowed) {
-        phonePopup.style.display = "none";
-        document.querySelector(".machine").style.display = "none";
-        document.querySelector(".instructions").innerHTML = `
-            <h2 style="font-size:26px;margin-bottom:10px;">🚫 ممنوع اللعب</h2>
-            <p style="font-size:20px;">هذا الجهاز استخدم اللعبة مسبقًا ولا يمكنه اللعب مرة أخرى 😈</p>
-        `;
-        lever.style.pointerEvents = "none";
-        allowed = false;
-        spinning = true;
-    }
-}
+        function showWin(type) {
+            popup.style.display = "flex";
+            popupTitle.textContent = "مبروووك! 🎉";
 
+            let msg = "";
 
-/* —————————————————— 3) إدخال الرقم —————————————————— */
+            if (type === "burger") {
+                popupEmoji.textContent = "🍔";
+                popupMsg.textContent = "ربحت وجبة برغر!";
+                msg = "مرحبا، ربحت وجبة برغر من لعبة Beast Burger 🎉🍔";
+            } else if (type === "salad") {
+                popupEmoji.textContent = "🥗";
+                popupMsg.textContent = "ربحت سلطة!";
+                msg = "مرحبا، ربحت سلطة من لعبة Beast Burger 🥗🔥";
+            } else if (type === "wings") {
+                popupEmoji.textContent = "🍖";
+                popupMsg.textContent = "ربحت أجنحة!";
+                msg = "مرحبا، ربحت وجبة أجنحة من لعبة Beast Burger 🍖🔥";
+            }
 
-async function submitPhone() {
+            waLink.href = https://wa.me/972599443332?text=${encodeURIComponent(msg)};
+            waLink.style.display = "block";
+        }
 
-    phone = phoneInput.value.trim();
-    if (phone.length < 7) return alert("رقم غير صالح");
-
-    const params = new URLSearchParams({
-        action: "checkPhone",
-        phone: phone,
-        deviceId: deviceId
-    });
-
-    const res = await fetch(`${API_URL}?${params}`).then(r=>r.json());
-
-    if (!res.allowed) {
-        if (res.reason === "device_exists") return alert("هذا الجهاز استخدم اللعبة مسبقاً 😈");
-        if (res.reason === "phone_exists") return alert("هذا الرقم لعب مسبقاً 😈");
-        return;
-    }
-
-    // Save registration
-    fetch(API_URL, {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({
-            action: "registerPhone",
-            phone: phone,
-            deviceId: deviceId
-        })
-    });
-
-    phonePopup.style.display = "none";
-    allowed = true;
-}
-
-
-/* —————————————————— 4) الذراع —————————————————— */
-
-lever.onclick = function () {
-    if (!allowed) return alert("يجب إدخال رقم الجوال أولاً");
-    if (spinning) return;
-
-    spinning = true;
-    startSpin();
-
-    fetch(API_URL, {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({
-            action: "played",
-            phone: phone,
-            deviceId: deviceId
-        })
-    });
-};
-
-
-/* —————————————————— 5) السبين —————————————————— */
-
-function startSpin() {
-
-    let result = [];
-    const symbols = ["🍔","🥗","🍖","🍟"];
-
-    const isWin = Math.random() < 0.10;
-    let forcedType = null;
-
-    if (isWin) {
-        const r = Math.random();
-        if (r < 0.01) forcedType = "burger";
-        else if (r < 0.46) forcedType = "salad";
-        else forcedType = "wings";
-    }
-
-    ["r1","r2","r3"].forEach((id,idx)=>{
-        let reel = document.getElementById(id);
-
-        let interval = setInterval(()=>{
-            reel.textContent = symbols[Math.floor(Math.random()*symbols.length)];
-        },80);
-
-        setTimeout(()=>{
-            clearInterval(interval);
-
-            let final = forcedType
-                ? (forcedType==="burger" ? "🍔" : forcedType==="salad" ? "🥗" : "🍖")
-                : symbols[Math.floor(Math.random()*symbols.length)];
-
-            reel.textContent = final;
-            result[idx] = final;
-
-            if(idx === 2) setTimeout(()=>checkResult(result,forcedType),600);
-
-        },4200 + idx * 400);
-    });
-
-}
-
-
-/* —————————————————— 6) النتيجة —————————————————— */
-
-function checkResult(arr,forced){
-
-    if(forced){
-        spinning=false;
-        allowed=false;
-        return showWin(forced);
-    }
-
-    if(arr[0]===arr[1] && arr[1]===arr[2]){
-        if(arr[0]==="🍔") return showWin("burger");
-        if(arr[0]==="🥗") return showWin("salad");
-        if(arr[0]==="🍖") return showWin("wings");
-    }
-
-    spinning=false;
-    allowed=false;
-    showLose();
-}
-
-
-/* —————————————————— 7) الفوز —————————————————— */
-
-function showWin(type){
-
-    popup.style.display="flex";
-    popupTitle.textContent="مبروووك! 🎉";
-
-    if(type==="burger"){
-        popupEmoji.textContent="🍔";
-        popupMsg.textContent="ربحت وجبة برغر!";
-    }
-    else if(type==="salad"){
-        popupEmoji.textContent="🥗";
-        popupMsg.textContent="ربحت سلطة!";
-    }
-    else {
-        popupEmoji.textContent="🍖";
-        popupMsg.textContent="ربحت أجنحة!";
-    }
-
-    waLink.href=`https://wa.me/972599443332?text=${encodeURIComponent("ربحت من لعبة Beast Burger 🎉")}`;
-    waLink.style.display="block";
-}
-
-
-/* —————————————————— 8) الخسارة —————————————————— */
-
-function showLose(){
-    popup.style.display="flex";
-    popupTitle.textContent="حظاً أوفر 😈";
-    popupEmoji.textContent="😈";
-    popupMsg.textContent="حظاً أوفر!";
-    waLink.style.display="none";
-}
-
-</script>
+        // رسالة الخسارة
+        function showLose() {
+            popup.style.display = "flex";
+            popupTitle.textContent = "حظاً أوفر 😈";
+            popupEmoji.textContent = "😈";
+            popupMsg.textContent = "حظاً أوفر!";
+            waLink.style.display = "none";
+        }
+    </script>
 
 </body>
 </html>
