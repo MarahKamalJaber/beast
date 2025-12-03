@@ -210,14 +210,17 @@ function submitPhone() {
                 return alert("غير مسموح باللعب.");
             }
 
-            fetch(API_URL, {
-                method: "POST",
-                headers: {"Content-Type":
-"title":"registerPhone",
-                    phone: phone,
-                    deviceId: deviceId
-                })
-            });
+          // سجل الرقم + الجهاز لأول مرة
+fetch(API_URL, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+        action: "registerPhone",
+        phone: phone,
+        deviceId: deviceId
+    })
+});
+
 
             phonePopup.style.display = "none";
             allowed = true;
@@ -346,3 +349,4 @@ function showLose(){
 
 </body>
 </html>
+
