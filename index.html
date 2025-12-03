@@ -66,7 +66,6 @@
         <h2 id="popupTitle">مبروووك!</h2>
         <div id="popupEmoji" style="font-size:40px;">🔥🍔🔥</div>
         <p id="popupMsg"></p>
-
         <a id="waLink" href="#" target="_blank"
            style="display:none;margin-top:15px;padding:12px;background:#25D366;color:white;
            border-radius:10px;font-size:18px;text-decoration:none;font-weight:bold;">
@@ -92,57 +91,68 @@
 
 <script>
 
-/* —————————————— (1) جهاز ثابت = Cookie + Local + Session ——————————————— */
-function getOrCreateDeviceId() {
+/* —————————————————— SUPER DEVICE ID (لا ينحذف من أي متصفح) —————————————————— */
 
-    let id = localStorage.getItem("bbid");
-    if (id) {
-        sessionStorage.setItem("bbid", id);
-        document.cookie = `bbid=${id}; max-age=31536000; path=/; SameSite=None; Secure`;
-        return id;
+async function getSuperDeviceId() {
+
+    const db = await new Promise((resolve) => {
+        const req = indexedDB.open("BBID_DB", 1);
+        req.onupgradeneeded = e => e.target.result.createObjectStore("store");
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => resolve(null);
+    });
+
+    if (db) {
+        const tx = db.transaction("store", "readwrite");
+        const store = tx.objectStore("store");
+
+        const saved = await new Promise((resolve) => {
+            const g = store.get("bbid");
+            g.onsuccess = () => resolve(g.result || null);
+            g.onerror = () => resolve(null);
+        });
+
+        if (saved) return saved;
+
+        const newId =
+            "D" +
+            Math.abs(
+                (
+                    Date.now() +
+                    Math.random() +
+                    navigator.userAgent.length +
+                    screen.width +
+                    screen.height
+                ) | 0
+            );
+
+        store.put(newId, "bbid");
+        document.cookie = `bbid=${newId}; max-age=31536000; path=/`;
+        return newId;
     }
 
-    id = sessionStorage.getItem("bbid");
-    if (id) {
-        localStorage.setItem("bbid", id);
-        document.cookie = `bbid=${id}; max-age=31536000; path=/; SameSite=None; Secure`;
-        return id;
-    }
-
-    const cookieName = "bbid=";
-    const parts = decodeURIComponent(document.cookie).split(";");
-
-    for (let c of parts) {
-        c = c.trim();
-        if (c.indexOf(cookieName) === 0) {
-            id = c.substring(cookieName.length);
-            localStorage.setItem("bbid", id);
-            sessionStorage.setItem("bbid", id);
-            return id;
-        }
-    }
-
-    const client = new ClientJS();
-    const raw = client.getFingerprint() + navigator.userAgent + screen.width + screen.height;
-
-    let hash = 0;
-    for (let i = 0; i < raw.length; i++) {
-        hash = (hash << 5) - hash + raw.charCodeAt(i);
-        hash |= 0;
-    }
-
-    id = "D" + Math.abs(hash);
-
-    localStorage.setItem("bbid", id);
-    sessionStorage.setItem("bbid", id);
-    document.cookie = `bbid=${id}; max-age=31536000; path=/; SameSite=None; Secure`;
-
-    return id;
+    return (
+        "D" +
+        Math.abs(
+            (
+                Date.now() +
+                Math.random() +
+                navigator.userAgent.length +
+                screen.width +
+                screen.height
+            ) | 0
+        )
+    );
 }
 
-let deviceId = getOrCreateDeviceId();
+let deviceId = null;
+(async () => {
+    deviceId = await getSuperDeviceId();
+})();
 
-/* —————————————— API ——————————————— */
+
+/* —————————————————— API —————————————————— */
+
 const API_URL = "/api/proxy";
 
 let phone = "";
@@ -158,39 +168,45 @@ const phonePopup = document.getElementById("phonePopup");
 const phoneInput = document.getElementById("phoneInput");
 const lever = document.getElementById("lever");
 
-/* —————————————— (2) فحص الجهاز أول ما يدخل ——————————————— */
-(function checkDevice() {
+
+/* —————————————————— فحص الجهاز أول ما يدخل —————————————————— */
+
+async function checkDevice() {
+
+    while (!deviceId) await new Promise(r => setTimeout(r, 50));
 
     const params = new URLSearchParams({
         action: "checkDeviceOnly",
         deviceId: deviceId
     });
 
-    fetch(`${API_URL}?${params}`)
-        .then(r => r.json())
-        .then(res => {
+    const res = await fetch(`${API_URL}?${params}`).then(r=>r.json());
 
-            if (!res.allowed) {
-                phonePopup.style.display = "none";
-                document.querySelector(".machine").style.display = "none";
-                lever.style.pointerEvents = "none";
+    if (!res.allowed) {
+        phonePopup.style.display = "none";
+        document.querySelector(".machine").style.display = "none";
+        lever.style.pointerEvents = "none";
 
-                document.querySelector(".instructions").innerHTML = `
-                    <h2 style="font-size:26px;margin-bottom:10px;">🚫 ممنوع اللعب</h2>
-                    <p style="font-size:20px;">هذا الجهاز استخدم اللعبة مسبقًا ولا يمكنه اللعب مرة أخرى 😈</p>
-                `;
+        document.querySelector(".instructions").innerHTML = `
+            <h2 style="font-size:26px;margin-bottom:10px;">🚫 ممنوع اللعب</h2>
+            <p style="font-size:20px;">هذا الجهاز استخدم اللعبة مسبقًا ولا يمكنه اللعب مرة أخرى 😈</p>
+        `;
 
-                allowed = false;
-                spinning = true;
-            }
-        });
-})();
+        allowed = false;
+        spinning = true;
+    }
+}
 
-/* —————————————— (3) إدخال الرقم ——————————————— */
-function submitPhone() {
+checkDevice();
+
+
+/* —————————————————— إدخال الرقم —————————————————— */
+
+async function submitPhone() {
+
+    while (!deviceId) await new Promise(r=>setTimeout(r,40));
 
     phone = phoneInput.value.trim();
-
     if (phone.length < 7) return alert("رقم غير صالح");
 
     const params = new URLSearchParams({
@@ -199,39 +215,33 @@ function submitPhone() {
         deviceId: deviceId
     });
 
-    fetch(`${API_URL}?${params}`)
-        .then(r => r.json())
-        .then(res => {
+    const res = await fetch(`${API_URL}?${params}`).then(r=>r.json());
 
-            if (!res.allowed) {
+    if (!res.allowed) {
+        if (res.reason === "device_exists") return alert("هذا الجهاز استخدم اللعبة مسبقاً 😈");
+        if (res.reason === "phone_exists") return alert("هذا الرقم لعب مسبقاً 😈");
+        return alert("غير مسموح باللعب.");
+    }
 
-                if (res.reason === "device_exists")
-                    return alert("هذا الجهاز استخدم اللعبة مسبقاً 😈");
+    fetch(API_URL, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            action: "registerPhone",
+            phone: phone,
+            deviceId: deviceId
+        })
+    });
 
-                if (res.reason === "phone_exists")
-                    return alert("هذا الرقم لعب مسبقاً 😈");
-
-                return alert("غير مسموح باللعب.");
-            }
-
-            fetch(API_URL, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    action: "registerPhone",
-                    phone: phone,
-                    deviceId: deviceId
-                })
-            });
-
-            phonePopup.style.display = "none";
-            allowed = true;
-        });
+    phonePopup.style.display = "none";
+    allowed = true;
 }
 
-/* —————————————— (4) الذراع ——————————————— */
-lever.onclick = function () {
 
+
+/* —————————————————— الذراع —————————————————— */
+
+lever.onclick = function () {
     if (!allowed) return alert("يجب إدخال رقم الجوال أولاً");
     if (spinning) return;
 
@@ -249,7 +259,9 @@ lever.onclick = function () {
     });
 };
 
-/* —————————————— (5) السبين ——————————————— */
+
+/* —————————————————— السبين —————————————————— */
+
 function startSpin() {
 
     let result = [];
@@ -276,19 +288,23 @@ function startSpin() {
             clearInterval(interval);
 
             let final = forcedType
-                ? (forcedType==="burger" ? "🍔" : forcedType==="salad" ? "🥗" : "🍖")
+                ? (forcedType==="burger" ? "🍔" :
+                   forcedType==="salad" ? "🥗" : "🍖")
                 : symbols[Math.floor(Math.random()*symbols.length)];
 
             reel.textContent = final;
             result[idx] = final;
 
-            if(idx === 2) setTimeout(()=>checkResult(result,forcedType),600);
+            if(idx === 2)
+                setTimeout(()=>checkResult(result,forcedType),600);
 
         },4200 + idx * 400);
     });
 }
 
-/* —————————————— (6) النتيجة ——————————————— */
+
+/* —————————————————— النتيجة —————————————————— */
+
 function checkResult(arr,forced){
 
     if(forced){
@@ -308,7 +324,9 @@ function checkResult(arr,forced){
     showLose();
 }
 
-/* —————————————— (7) الفوز ——————————————— */
+
+/* —————————————————— الفوز —————————————————— */
+
 function showWin(type){
 
     popup.style.display="flex";
@@ -331,7 +349,9 @@ function showWin(type){
     waLink.style.display="block";
 }
 
-/* —————————————— (8) الخسارة ——————————————— */
+
+/* —————————————————— الخسارة —————————————————— */
+
 function showLose(){
     popup.style.display="flex";
     popupTitle.textContent="حظاً أوفر 😈";
