@@ -97,43 +97,52 @@
 
 <script>
 
-/* —————————————— (1) جهاز ثابت = Cookie bbid ——————————————— */
+/* —————————————————— (1) جهاز ثابت = Cookie + LocalStorage —————————————————— */
 
-function getOrCreateDeviceId() {
+function getDeviceId() {
 
-    const name = "bbid=";
+    // 1) Cookie
+    const cookieName = "bbid=";
     const decoded = decodeURIComponent(document.cookie);
-    const parts = decoded.split(';');
+    const parts = decoded.split(";");
 
-    // موجود مسبقاً؟
     for (let c of parts) {
         c = c.trim();
-        if (c.indexOf(name) === 0) {
-            return c.substring(name.length);
+        if (c.indexOf(cookieName) === 0) {
+            return c.substring(cookieName.length);
         }
     }
 
-    // توليد بصمة جديدة
+    // 2) LocalStorage fallback
+    const ls = localStorage.getItem("bbid");
+    if (ls) {
+        document.cookie = `bbid=${ls}; max-age=31536000; path=/; SameSite=None; Secure`;
+        return ls;
+    }
+
+    // 3) NEW fingerprint
     const client = new ClientJS();
     const raw = client.getFingerprint() + navigator.userAgent + screen.width + screen.height;
 
-    let hash = 0;
+    let h = 0;
     for (let i = 0; i < raw.length; i++) {
-        hash = (hash << 5) - hash + raw.charCodeAt(i);
-        hash |= 0;
+        h = (h << 5) - h + raw.charCodeAt(i);
+        h |= 0;
     }
 
-    const newId = "D" + Math.abs(hash);
+    const newId = "D" + Math.abs(h);
 
-    // تخزينها في Cookie سنة كاملة
+    // Save cookie + LS
     document.cookie = `bbid=${newId}; max-age=31536000; path=/; SameSite=None; Secure`;
+    localStorage.setItem("bbid", newId);
 
     return newId;
 }
 
-let deviceId = getOrCreateDeviceId();
+let deviceId = getDeviceId();
 
-/* —————————————— API ——————————————— */
+
+/* —————————————————— API —————————————————— */
 
 const API_URL = "/api/proxy";
 
@@ -150,7 +159,8 @@ const phonePopup = document.getElementById("phonePopup");
 const phoneInput = document.getElementById("phoneInput");
 const lever = document.getElementById("lever");
 
-/* —————————————— (2) فحص الجهاز أول ما يدخل ——————————————— */
+
+/* —————————————————— (2) فحص الجهاز أول ما يدخل —————————————————— */
 
 (function checkDevice() {
 
@@ -182,9 +192,11 @@ const lever = document.getElementById("lever");
 
 })();
 
-/* —————————————— (3) إدخال الرقم ——————————————— */
+
+/* —————————————————— (3) إدخال الرقم —————————————————— */
 
 function submitPhone() {
+
     phone = phoneInput.value.trim();
 
     if (phone.length < 7) return alert("رقم غير صالح");
@@ -210,24 +222,24 @@ function submitPhone() {
                 return alert("غير مسموح باللعب.");
             }
 
-          // سجل الرقم + الجهاز لأول مرة
-fetch(API_URL, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-        action: "registerPhone",
-        phone: phone,
-        deviceId: deviceId
-    })
-});
-
+            // 🔥 سجل أول مرة
+            fetch(API_URL, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    action: "registerPhone",
+                    phone: phone,
+                    deviceId: deviceId
+                })
+            });
 
             phonePopup.style.display = "none";
             allowed = true;
         });
 }
 
-/* —————————————— (4) المقبض ——————————————— */
+
+/* —————————————————— (4) الذراع —————————————————— */
 
 lever.onclick = function () {
 
@@ -249,7 +261,8 @@ lever.onclick = function () {
 
 };
 
-/* —————————————— (5) السبين ——————————————— */
+
+/* —————————————————— (5) السبين —————————————————— */
 
 function startSpin() {
 
@@ -290,7 +303,8 @@ function startSpin() {
 
 }
 
-/* —————————————— (6) النتيجة ——————————————— */
+
+/* —————————————————— (6) النتيجة —————————————————— */
 
 function checkResult(arr,forced){
 
@@ -311,7 +325,8 @@ function checkResult(arr,forced){
     showLose();
 }
 
-/* —————————————— (7) الفوز ——————————————— */
+
+/* —————————————————— (7) الفوز —————————————————— */
 
 function showWin(type){
 
@@ -335,7 +350,8 @@ function showWin(type){
     waLink.style.display="block";
 }
 
-/* —————————————— (8) الخسارة ——————————————— */
+
+/* —————————————————— (8) الخسارة —————————————————— */
 
 function showLose(){
     popup.style.display="flex";
@@ -349,4 +365,3 @@ function showLose(){
 
 </body>
 </html>
-
